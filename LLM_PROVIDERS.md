@@ -17,7 +17,7 @@ Jeder Nutzer muss bei seinem gewählten Provider einen eigenen Account anlegen u
 ### Mistral (Default)
 
 - **LiteLLM-Provider**: `mistral`
-- **Default-Modell**: `mistral-large-latest`
+- **Default-Modell**: `mistral-medium-latest`
 - **API-Key**: `MISTRAL_API_KEY`
 - **Anmeldung**: https://console.mistral.ai
 - **Dokumentation**: https://docs.mistral.ai/
@@ -26,7 +26,7 @@ Jeder Nutzer muss bei seinem gewählten Provider einen eigenen Account anlegen u
 ### Anthropic
 
 - **LiteLLM-Provider**: `anthropic`
-- **Default-Modell**: `claude-3-5-sonnet-20241022`
+- **Default-Modell**: `claude-sonnet-5`
 - **API-Key**: `ANTHROPIC_API_KEY`
 - **Anmeldung**: https://console.anthropic.com
 - **Dokumentation**: https://docs.anthropic.com
@@ -35,7 +35,7 @@ Jeder Nutzer muss bei seinem gewählten Provider einen eigenen Account anlegen u
 ### xAI
 
 - **LiteLLM-Provider**: `xai`
-- **Default-Modell**: `grok-3`
+- **Default-Modell**: `grok-4.5`
 - **API-Key**: `XAI_API_KEY`
 - **Anmeldung**: https://console.x.ai
 - **Dokumentation**: https://docs.x.ai
@@ -44,7 +44,7 @@ Jeder Nutzer muss bei seinem gewählten Provider einen eigenen Account anlegen u
 ### Moonshot / Kimi
 
 - **LiteLLM-Provider**: `moonshot`
-- **Default-Modell**: `moonshot-v1-8k`
+- **Default-Modell**: `kimi-k2.6`
 - **API-Key**: `MOONSHOT_API_KEY`
 - **Anmeldung**: https://platform.moonshot.cn
 - **Dokumentation**: https://platform.moonshot.cn/docs
@@ -53,7 +53,7 @@ Jeder Nutzer muss bei seinem gewählten Provider einen eigenen Account anlegen u
 ### DeepSeek
 
 - **LiteLLM-Provider**: `deepseek`
-- **Default-Modell**: `deepseek-chat`
+- **Default-Modell**: `deepseek-v4-pro`
 - **API-Key**: `DEEPSEEK_API_KEY`
 - **Anmeldung**: https://platform.deepseek.com
 - **Dokumentation**: https://platform.deepseek.com/docs

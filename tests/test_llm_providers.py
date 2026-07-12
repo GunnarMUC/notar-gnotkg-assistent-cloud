@@ -17,8 +17,8 @@ from core.llm_providers import (
 
 class TestProviderHelpers:
     def test_default_model(self):
-        assert get_default_model(Provider.MISTRAL) == "mistral-large-latest"
-        assert get_default_model(Provider.ANTHROPIC) == "claude-3-5-sonnet-20241022"
+        assert get_default_model(Provider.MISTRAL) == "mistral-medium-latest"
+        assert get_default_model(Provider.ANTHROPIC) == "claude-sonnet-5"
 
     def test_full_model_name_adds_prefix(self):
         assert get_full_model_name(Provider.MISTRAL, "custom") == "mistral/custom"
@@ -57,7 +57,7 @@ class TestCallLlm:
         assert json.loads(result) == payload
         mock_completion.assert_called_once()
         call_kwargs = mock_completion.call_args.kwargs
-        assert call_kwargs["model"] == "mistral/mistral-large-latest"
+        assert call_kwargs["model"] == "mistral/mistral-medium-latest"
         assert call_kwargs["api_key"] == "test-key"
 
     def test_auth_error(self, mocker: MockerFixture):
@@ -68,7 +68,7 @@ class TestCallLlm:
             side_effect=litellm.AuthenticationError(
                 "Invalid key",
                 llm_provider="mistral",
-                model="mistral/mistral-large-latest",
+                model="mistral/mistral-medium-latest",
             ),
         )
 

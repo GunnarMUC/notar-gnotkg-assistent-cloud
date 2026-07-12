@@ -23,11 +23,11 @@ class Provider:
 
 
 DEFAULT_MODELS: dict[str, str] = {
-    Provider.ANTHROPIC: "claude-3-5-sonnet-20241022",
-    Provider.XAI: "grok-3",
-    Provider.MOONSHOT: "moonshot-v1-8k",
-    Provider.MISTRAL: "mistral-large-latest",
-    Provider.DEEPSEEK: "deepseek-chat",
+    Provider.ANTHROPIC: "claude-sonnet-5",
+    Provider.XAI: "grok-4.5",
+    Provider.MOONSHOT: "kimi-k2.6",
+    Provider.MISTRAL: "mistral-medium-latest",
+    Provider.DEEPSEEK: "deepseek-v4-pro",
 }
 
 API_KEY_ENV_VARS: dict[str, str] = {
