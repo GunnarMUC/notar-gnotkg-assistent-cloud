@@ -7,32 +7,37 @@ Diese Audit-Anleitung wurde für das Projekt **„Notar GNotKG Assistent"** ange
 **Tech-Stack (zusammengefasst)**:
 - **Sprache**: Python 3.12
 - **UI**: Streamlit
-- **LLM**: Ollama (lokal, localhost:11434)
-- **Datenbank**: SQLite + Dateisystem (JSON, JSONL)
-- **Dokumente**: pymupdf (PDF), pytesseract (OCR), python-docx (DOCX)
-- **Weitere**: pandoc (RTF), httpx (HTTP), jinja2 (Templates), loguru (Logging)
-- **Build/Packages**: uv oder pip, pyproject.toml
-- **Betrieb**: Lokal, macOS Apple Silicon, keine Cloud
+- **LLM**: LiteLLM + Cloud-Provider (Mistral, Anthropic, xAI, Moonshot/Kimi, DeepSeek)
+- **Datenbank**: SQLite + Dateisystem (JSON)
+- **Dokumente**: pypdf (PDF), OCR optional
+- **Weitere**: litellm, cryptography, httpx, jinja2, loguru
+- **Build/Packages**: uv, pyproject.toml, uv.lock
+- **Betrieb**: Lokal, macOS / Linux / Windows, Docker optional; benötigt Internet
 
 **Kritische Pfade (projektspezifisch)**:
 - `core/fee_engine.py` — deterministische Gebührenberechnung (keine KI-Halluzinationen)
-- `core/llm_extractor.py` — Kommunikation mit Ollama (localhost, kein Netz)
+- `core/llm_extractor.py` — Kommunikation mit Cloud-Providern via LiteLLM
+- `core/llm_providers.py` — Provider-Auswahl, Modell-Mapping, API-Key-Handling
+- `core/provider_key_store.py` — verschlüsselte Speicherung der API-Keys
 - `core/document_parser.py` — Datei-I/O, Uploads, OCR
 - `core/invoice_generator.py` — DOCX/RTF-Generierung mit Notar-Profil-Daten (IBAN!)
 - `core/excel_logger.py` — Excel/Audit-Logs
 - `data/notary_profile.json` — sensible Stammdaten (IBAN, Steuernummer)
+- `data/provider_keys.json` — verschlüsselte API-Keys
 - `prompts/extraction_v1.txt` — System-Prompts (Prompt-Injection?)
 
 **Sensitive Datenflüsse**:
 - Notar-IBAN: `notary_profile.json` → `invoice_generator.py` → DOCX/RTF-Ausgabe
-- Urkundentexte: Upload → `document_parser.py` → `llm_extractor.py` → Ollama (alles lokal)
+- Urkundentexte: Upload → `document_parser.py` → `llm_extractor.py` → Cloud-Provider (TLS, extern)
+- API-Keys: UI / `.env` → `provider_key_store.py` → verschlüsselte `data/provider_keys.json`
 - Berechnete Rechnungen: `fee_engine.py` → `invoice_generator.py` → Dateisystem
 
 **Abgrenzung zu DevOps-Kontexten**:
-- Keine Cloud, kein Kubernetes, kein CI/CD (außer lokalen Tests)
-- Docker optional, Ollama nativ (Metal-Beschleunigung)
+- Cloud-Provider-Anbindung, aber keine eigene Cloud-Infrastruktur
+- GitHub Actions CI/CD: ruff, mypy, pytest, gitleaks, semgrep, pip-audit
+- Docker optional, kein Ollama
 - Keine Web-API, keine externen Benutzer
-- Einziger externer HTTP-Call: `gesetze-im-internet.de` (GNotKG-Check, optional)
+- Externe HTTP-Calls: gewählter LLM-Provider + `gesetze-im-internet.de` (optional)
 - Keine Authentifizierung (lokale Single-User-App)
 
 ---

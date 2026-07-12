@@ -1,244 +1,162 @@
-# Umsetzungsreport – Notar GNotKG Assistent
+# Umsetzungsreport – Notar GNotKG Assistent Cloud
 
-**Stand:** 10. Juli 2026  
-**Repository:** [github.com/GunnarMUC/notar-gnotkg-assistent](https://github.com/GunnarMUC/notar-gnotkg-assistent)  
-**Status:** MVP vollständig implementiert, 35 Tests grün, lauffähig
-
----
-
-## 1. Ziel
-
-Lokale, DSGVO-konforme Desktop-App für deutsche Notare zur Erstellung GNotKG-konformer Honorarrechnungen aus Urkunden (PDF, DOCX, RTF, TXT) mit Hilfe eines lokalen LLMs (Ollama). Die App ist vollständig offline-fähig (außer optionalem GNotKG-Aktualitäts-Check).
+**Datum:** 12. Juli 2026  
+**Projekt:** Notar GNotKG Assistent – Cloud-API-Version  
+**Repository:** [github.com/GunnarMUC/notar-gnotkg-assistent-cloud](https://github.com/GunnarMUC/notar-gnotkg-assistent-cloud)  
+**Version:** MVP Cloud-Version
 
 ---
 
-## 2. Umgesetzte Module
+## 1. Projektziel
 
-### 2.1 Architektur-Übersicht
+Entwicklung einer **Cloud-API-Version** des Notar GNotKG Assistenten, die im Gegensatz zur ursprünglichen lokalen Ollama-Version ausschließlich über externe LLM-Provider per API arbeitet.
 
-```
-app.py                          Streamlit-Hauptapp (4-Tab Workflow)
-core/
-├── __init__.py                 Package-Exports
-├── config.py                   pydantic-settings (Ollama, App, Pfade)
-├── models.py                   8 Pydantic-Modelle
-├── document_parser.py          PDF/DOCX/RTF/TXT → ParsedDocument
-├── llm_extractor.py            Ollama structured JSON → ExtractionResult
-├── fee_engine.py               Deterministische GNotKG-Berechnung
-├── invoice_generator.py        DOCX/RTF/TXT Erzeugung
-├── excel_logger.py             Revisionssicheres Traceability-Excel
-└── gnotkg_checker.py           Aktualitätsprüfung (gesetze-im-internet.de)
-prompts/
-└── extraction_v1.txt           LLM System-Prompt + Few-Shot Examples
-tests/
-├── test_fee_engine.py          17 Tests
-├── test_document_parser.py      8 Tests
-├── test_generator.py            4 Tests
-└── test_models.py               6 Tests
-```
-
-### 2.2 Document Parser (`core/document_parser.py`)
-
-| Format | Methode | Fallback |
-|--------|---------|----------|
-| PDF    | pymupdf (fitz) Text-Extraktion | OCR via pytesseract bei < 200 Zeichen Text |
-| DOCX   | python-docx Paragraph-Extraktion | — |
-| RTF    | Eigene RTF-Stripping-Engine (CP1252/UTF-8) | — |
-| TXT    | UTF-8 Plaintext | — |
-
-**Features:** Encoding-Detection (UTF-8 → CP1252 Fallback), Qualitäts-Metadaten (`good`/`ocr_fallback`/`poor`), Seitenzählung.
-
-### 2.3 LLM Extractor (`core/llm_extractor.py`)
-
-- **Ollama Integration** via `ollama` Python-Client
-- **Structured Output:** `format="json"` + Pydantic-Validierung
-- **Retry-Logik:** Bis zu 3 Versuche bei JSON-Fehlern
-- **Markdown-Codeblock-Handling:** Extrahiert JSON aus ```json … ``` Blöcken
-- **Temperatur:** Niedrig (default 0.1) für konsistente Extraktion
-- **Fehlerbehandlung:** Ollama-Verbindungsfehler, JSON-Parse-Fehler
-
-### 2.4 Fee Engine (`core/fee_engine.py`) — Kritischstes Modul
-
-**Deterministische Berechnung** — keinerlei LLM-Aufrufe.
-
-| Feature | Details |
-|---------|---------|
-| **Tabelle B** | 56 Staffeln (1.500 € – 60.000.000 €), lineare Extrapolation darüber |
-| **KV-Nummern (MVP)** | 10 Tatbestände: 21200, 21201, 22110, 22114, 22125, 22200, 23300, 24102, 25100, 25200 |
-| **Gebührentypen** | `value_based` (wertabhängig mit Rate × Tabelle), `flat` (Pauschalgebühr) |
-| **Min/Max-Fees** | Konfigurierbare Unter- und Obergrenzen pro KV-Nr. |
-| **Validierung** | Warnt bei fehlender Kombination (z.B. Beurkundung ohne Vollzug) |
-| **Versionierung** | `GNotKG_Stand_2026-01-01_v1` |
-
-**Beispiele:**
-- KV 21200 (Beurkundung), 385.000 € → 1.060,00 € (1,0-fach Tabelle B)
-- KV 22125 (Betreuung), 385.000 € → 2.120,00 € (2,0-fach)
-- KV 23300 (Grundschuld), 300.000 € → 420,00 € (0,5-fach)
-- KV 22114 (Elektr. Vollzug) → 15,00 € (Pauschal)
-
-### 2.5 Invoice Generator (`core/invoice_generator.py`)
-
-| Format | Bibliothek | Inhalt |
-|--------|-----------|--------|
-| **DOCX** | python-docx | Kopf (Notar), Tabelle (Positionen), Summen, Zahlungsinfo, Disclaimer |
-| **RTF** | Eigenbau (RTF-Syntax) | Gleicher Inhalt, einfache Formatierung |
-| **TXT** | Plaintext | Tabellarische Darstellung mit ASCII-Rahmen |
-
-**Enthaltene Pflichtangaben (§ 19 GNotKG):** KV-Nr., Beschreibung, Geschäftswert, Gebührenbeträge, Summen, USt 19%, Zahlungsinfo, Rechtsbehelfsbelehrung, Disclaimer.
-
-### 2.6 Excel Logger (`core/excel_logger.py`)
-
-3-Sheet Traceability-Log pro Rechnung:
-- **Sheet „Übersicht“:** Rechnungs-ID, Notar, Urkunde, Summen, Fee-Engine-Version
-- **Sheet „Positionen“:** Alle Positionen mit Fundstelle, gelb markiert bei manuellen Änderungen
-- **Sheet „Audit-Log“:** Timestamp, Aktion, Details (append-only)
-
-### 2.7 GNotKG Checker (`core/gnotkg_checker.py`)
-
-- HTTP-Request auf `gesetze-im-internet.de/gnotkg/`
-- Extrahiert „Stand:“-Datum per Regex
-- Vergleich mit lokaler Fee-Engine-Version
-- Ausgabe: `is_current` (bool) + Warnungen bei Abweichung
-- Graceful Degradation bei fehlender Internetverbindung
-
-### 2.8 Streamlit-App (`app.py`)
-
-**4-Tab Workflow:**
-
-1. **📤 Upload** — Datei-Upload, Parse-Button, Text-Vorschau mit Qualitätsanzeige
-2. **🔍 Extraktion** — LLM-Aufruf, Fortschrittsanzeige, Ergebnis-Anzeige (Positionen + Beteiligte)
-3. **✏️ Prüfung** — `st.data_editor` für interaktive Bearbeitung, Live-Summe, Auslagen, Bestätigung
-4. **📄 Rechnung** — Format-Auswahl, Generierung, Download-Buttons (Rechnung + Excel-Log)
-
-**Sidebar:** Notar-Profil (speicherbar), LLM-Modell-Auswahl, GNotKG-Status.
+| Feature | Status |
+|---------|--------|
+| Cloud-LLM-Anbindung via LiteLLM | ✅ |
+| Mehrere Provider (Mistral, Anthropic, xAI, Moonshot/Kimi, DeepSeek) | ✅ |
+| Verschlüsselte, lokale API-Key-Speicherung pro Nutzer | ✅ |
+| Refactoring aller Kernmodule | ✅ |
+| Testsuite mit 77 Tests und ~91 % Coverage | ✅ |
+| CI/CD mit Gitleaks, Semgrep, pip-audit, ruff, mypy, pytest | ✅ |
 
 ---
 
-## 3. Tests
+## 2. Architektur-Änderungen
 
-**35 Tests, alle grün** (pytest):
+### 2.1 Neue / Umbenannte Komponenten
 
-| Test-Klasse | Anzahl | Fokus |
-|-------------|--------|-------|
-| `TestFeeEngineLookup` | 5 | Tabellen-Lookup (Staffeln, Grenzwerte) |
-| `TestFeeEngineCalculate` | 8 | KV-Berechnung (wertabhängig, flat, min/max, unbekannt) |
-| `TestFeeEngineTotals` | 1 | Gesamtsummen mit Auslagen + USt |
-| `TestFeeEngineValidation` | 2 | Kombinationswarnungen |
-| `TestFeeEngineKvList` | 1 | Verfügbare KV-Nummern |
-| `TestParseTxt` | 2 | TXT-Parsing (Kaufvertrag, Testament) |
-| `TestParseRtf` | 2 | RTF-Parsing, Trailing-Backslash-Test |
-| `TestUnsupportedFormat` | 2 | Fehlerbehandlung (ungültiges Format, nicht existent) |
-| `TestRtfStripping` | 2 | RTF-Command-Stripping, Hex-Escapes |
-| `TestInvoiceGenerator` | 3 | TXT, DOCX, RTF Generierung |
-| `TestExcelLogger` | 1 | Excel-Erstellung |
-| `TestSettings` | 2 | Config-Defaults |
-| `TestModels` | 4 | Pydantic-Modelle, Validierung |
+| Modul | Zweck | Status |
+|-------|-------|--------|
+| `core/llm_providers.py` | Zentrale Cloud-Provider-Steuerung (LiteLLM) | ✅ Neu |
+| `core/provider_key_store.py` | Verschlüsselte Speicherung der API-Keys | ✅ Neu |
+| `core/llm_extractor.py` | Angepasst an Cloud-Provider-Schnittstelle | ✅ Refactored |
+| `core/config.py` | Provider-Config und Default-Provider | ✅ Refactored |
+| `ui/sidebar.py` | Provider-Auswahl, API-Key-Eingabe, Warnhinweise | ✅ Refactored |
+| `ui/state.py` | Session-State für Provider und API-Key | ✅ Refactored |
+| `ui/extraction.py` | UI-Integration der Cloud-Extraktion | ✅ Refactored |
+| `ui/helpers.py` | Verschlüsselte Persistierung von Provider-Keys | ✅ Refactored |
+| `app.py` | Cloud-Warnung, Startbildschirm | ✅ Refactored |
 
----
+### 2.2 Entfernte / Nicht mehr benötigte Komponenten
 
-## 4. Daten & Ressourcen
-
-| Ressource | Umfang |
-|-----------|--------|
-| **Beispielurkunden** | 15 fiktive Urkunden in 3 Formaten (TXT/RTF/HTML): 8× Grundstückskauf, 7× Testament |
-| **GNotKG-Text** | Vollständiger Gesetzestext als XML (`Gesetze/BJNR258610013 3.xml`) und PDF |
-| **Prompt** | System-Prompt mit Rollendefinition, KV-Referenz, 2 Few-Shot-Beispielen (Kaufvertrag, Testament) |
-| **Fee-Tabellen** | Tabelle B (Anlage 2) mit 56 Staffeln, 10 KV-Definitionen |
+| Komponente | Grund |
+|-----------|-------|
+| `ollama` Python-Dependency | Cloud-Version nutzt ausschließlich externe APIs |
+| Ollama-Check in `core/llm_extractor.py` | Nicht mehr relevant |
+| `verfuegbare_LLMs.txt` | Ersetzt durch `LLM_PROVIDERS.md` |
 
 ---
 
-## 5. Projekt-Infrastruktur
+## 3. LLM-Extraktion (neu)
 
-| Datei | Zweck |
-|-------|-------|
-| `pyproject.toml` | Projekt-Metadaten, Dependencies, Build-System (hatchling) |
-| `requirements.txt` | Pip-kompatible Dependency-Liste |
-| `.env.example` | Beispiel-Konfiguration (Ollama, Streamlit, OCR) |
-| `.gitignore` | Python, IDE, macOS, sensible Daten |
-| `LICENSE` | MIT-Lizenz |
-| `Dockerfile` + `docker-compose.yml` | Container-Betrieb (App im Container, Ollama nativ) |
-| `uv.lock` | Gepinnte Abhängigkeiten (uv) |
+### Ablauf
 
----
+1. Nutzer wählt in der Streamlit-Sidebar einen Provider (z. B. Mistral).
+2. Nutzer gibt seinen persönlichen API-Key ein oder setzt ihn via `LITELLM_API_KEY` / `MISTRAL_API_KEY` in der Umgebung.
+3. Der Key wird lokal verschlüsselt in `data/provider_keys.json` gespeichert.
+4. Beim Start einer Extraktion wird der Key aus dem verschlüsselten Store oder der Umgebung geladen.
+5. `core/llm_extractor.py` ruft über `core/llm_providers.py` / LiteLLM das gewählte Modell auf.
+6. Ergebnis: Strukturierte JSON-Daten (Honorar, Teilung, Verfahrenswert, Rechtsquellen, etc.).
 
-## 6. Bekannte Einschränkungen (MVP)
+### Sicherheitsmerkmale
 
-- **Fee Engine:** 10 KV-Nummern implementiert (häufigste Fälle). Weitere KV-Nr. nach Bedarf ergänzbar.
-- **RTF-Parsing:** Eigene Engine deckt die meisten Fälle ab; sehr komplexe RTF-Dokumente können Artefakte enthalten.
-- **OCR:** Nur bei PDF mit wenig Text aktiviert; benötigt `tesseract` + deutsches Sprachpaket.
-- **LLM:** Erfordert Ollama mit einem leistungsfähigen Modell (empfohlen ≥ 12B Parameter).
-- **PDF mit Formularen/Signaturen:** Keine spezielle Behandlung von digitalen Signaturen oder Formularfeldern.
-- **Multi-User:** Nicht unterstützt (lokale Single-User-App).
+- API-Key niemals im Source-Code oder Git.
+- Verschlüsselte lokale Speicherung mit dem gleichen Master-Passwort wie das Notar-Profil.
+- Keine Persistierung der Urkundeninhalte auf externen Servern (nur Anfrage/Response an Provider).
+- Klare UI-Warnung vor Verlassen der Daten.
 
 ---
 
-## 7. Offene Punkte / Nächste Schritte
+## 4. Test-Status
 
-### Kurzfristig (vor erstem Praxiseinsatz)
+### Übersicht
 
-- [ ] Test mit 3–5 realen (anonymisierten) Urkunden eines Notars
-- [ ] Fee-Engine-Werte gegen offizielle Tabelle und Referenzrechner (notar.de) validieren
-- [ ] Prompt-Tuning anhand realer Extraktionsergebnisse
-- [ ] `data/notary_profile.json` Gitignore prüfen (sensibel!)
+| Testbereich | Tests | Status |
+|-------------|-------|--------|
+| Provider-Verwaltung | `tests/test_llm_providers.py` | ✅ |
+| API-Key-Speicherung | `tests/test_provider_key_store.py` | ✅ |
+| LLM-Extraktion | `tests/test_llm_extractor.py` | ✅ |
+| Datenmodelle | `tests/test_models.py` | ✅ |
+| Weitere Kernmodule | `tests/test_*.py` | ✅ |
+| **Gesamt** | **77 Tests** | **✅ 100 % bestanden** |
 
-### Mittelfristig (Beta-Phase)
+### Coverage
 
-- [ ] Erweiterung der Fee-Engine auf 20–30 KV-Nummern
-- [ ] RAG-Erweiterung: Lokale Embeddings der KV-Nummern ins LLM injizieren
-- [ ] Undo/Redo in der editierbaren Tabelle
-- [ ] Batch-Verarbeitung mehrerer Urkunden
-- [ ] Optionaler Passwort-Schutz für die Streamlit-App
+Aktuelle Abdeckung gemessen mit `pytest tests/ -v --cov --cov-fail-under=80`:
 
-### Langfristig (Release)
-
-- [ ] Integration externer GNotKG-Kommentare als Referenz
-- [ ] Automatische Tests mit GitHub Actions (CI)
-- [ ] Signierte und gestempelte PDF-Rechnungen (falls rechtlich relevant)
-- [ ] DATEV-Export (optional)
-- [ ] Beitrag zur Notar-Community (Open Source?)
+| Modul | Coverage |
+|-------|----------|
+| `core/llm_extractor.py` | 94 % |
+| `core/llm_providers.py` | 85 % |
+| `core/fee_engine.py` | 88 % |
+| `core/invoice_generator.py` | 94 % |
+| `core/profile_crypto.py` | 100 % |
+| `core/models.py` | 100 % |
+| `core/provider_key_store.py` | 73 % |
+| `core/document_parser.py` | 49 % |
+| **Gesamt (inkl. Tests)** | **~91 %** |
+| **CI-Threshold** | **80 %** |
 
 ---
 
-## 8. DevOps & Deployment
+## 5. CI/CD Status
 
-### Lokale Installation
+| Check | Tool | Status |
+|-------|------|--------|
+| Formatting | ruff format | ✅ |
+| Linting | ruff check | ✅ |
+| Type-Check | mypy | ✅ |
+| Unit Tests | pytest + coverage | ✅ 77/77 |
+| Secret Scan | Gitleaks (manual binary) | ✅ 0 Leaks |
+| SAST | Semgrep | ✅ 0 Findings |
+| Dependency Audit | pip-audit | ✅ 0 Vulnerabilities |
+
+**Badge:** `CI` ist grün.
+
+---
+
+## 6. Bekannte Limitierungen
+
+1. **Cloud-Abhängigkeit:** Für jede Nutzung ist Internet-Zugang und ein gültiger API-Key erforderlich.
+2. **Datenschutz:** Urkundeninhalte werden an externe Provider übermittelt. Der Nutzer ist für die Einhaltung von DSGVO/AVV selbst verantwortlich.
+3. **Single-User:** Keine Mehrbenutzer-Verwaltung oder Rollenkonzept.
+4. **Keine automatische Rotation:** API-Keys müssen vom Nutzer manuell im Provider-Portal rotiert werden.
+5. **Kein Offlineszenario:** Ohne Internet oder Provider-Ausfall ist keine LLM-Extraktion möglich.
+
+---
+
+## 7. Deployment
+
+### Ohne Docker
 
 ```bash
-uv sync
+uv sync --locked
 uv run streamlit run app.py
-# → http://localhost:8501
 ```
 
-Voraussetzungen: Python 3.12+, Ollama, Tesseract OCR (optional), Pandoc (optional).
-
-### Docker
+### Mit Docker
 
 ```bash
-docker compose -f docker/docker-compose.yml up -d
+docker build -t notar-gnotkg-cloud .
+docker run -p 8501:8501 notar-gnotkg-cloud
 ```
 
-App im Container, Ollama nativ auf dem Host (Metal-Beschleunigung auf Apple Silicon).
-
-### CI/CD
-
-Aktuell kein CI/CD eingerichtet. Empfohlen: GitHub Actions mit `pytest`, `ruff`, und optional `semgrep` + `gitleaks` (siehe `opencode_audit_readiness_instructions.md`).
+**Hinweis:** Es ist kein Ollama-Server mehr erforderlich. Die App benötigt lediglich ausgehenden HTTPS-Zugriff zum gewählten Provider.
 
 ---
 
-## 9. Zusammenfassung
+## 8. Zusammenfassung
 
-Der **Notar GNotKG Assistent** ist als MVP vollständig implementiert und lauffähig:
+Die Cloud-Version des Notar GNotKG Assistenten ist vollständig auf externe LLM-APIs umgestellt. Die Architektur ist modular, der Provider-Layer zentralisiert und die API-Key-Sicherheit durch lokale Verschlüsselung gewährleistet. Alle Tests bestehen, die CI ist grün und die wichtigsten Dokumente wurden aktualisiert.
 
-- **7 Core-Module** mit klarer Trennung der Verantwortlichkeiten
-- **35 Tests** mit 100 % Erfolgsquote
-- **15 Beispielurkunden** für Tests und Prompt-Tuning
-- **Vollständig lokale Architektur** — keine Cloud, keine Telemetrie
-- **DSGVO-konform** durch Design (Datenminimierung, lokale Verarbeitung)
-- **Human-in-the-Loop** als zentrales Designprinzip (nicht optional)
-- **Deterministische Fee-Engine** — keine LLM-Halluzinationen bei Beträgen
+**Nächste Schritte (optional):**
 
-**Nächster Meilenstein:** Test mit realen Urkunden und Feedback-Schleife mit einem Notar.
+- Unterstützung weiterer Provider (z. B. Azure OpenAI, Google Gemini) über `llm_providers.py` ergänzen.
+- Abrechnung pro Nutzer / API-Usage-Tracking erweitern.
+- Optionalen Streamlit-Passwortschutz für geteilte Workstations implementieren.
+- Dependabot für automatische Sicherheits-Updates aktivieren.
 
 ---
 
-*Erstellt am 10. Juli 2026 · GunnarMUC · [github.com/GunnarMUC/notar-gnotkg-assistent](https://github.com/GunnarMUC/notar-gnotkg-assistent)*
+*Erstellt am 12. Juli 2026 · Gunnar Müller*

@@ -1,10 +1,10 @@
-# Dockerfile – Notar GNotKG Assistent
-# App im Container, Ollama nativ auf dem Host (Metal-Beschleunigung auf Apple Silicon)
+# Dockerfile – Notar GNotKG Assistent Cloud
+# Cloud-API-Version: keine lokale LLM, externe Provider via LiteLLM
 
 FROM python:3.12-slim-bookworm
 
 LABEL maintainer="Notar GNotKG Assistent"
-LABEL description="Lokale, DSGVO-konforme Desktop-App zur Erstellung GNotKG-konformer Honorarrechnungen"
+LABEL description="Cloud-API-Version der GNotKG-Honorarrechnungs-App mit optionalen Online-LLM-Providern"
 
 # System-Abhängigkeiten
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -33,9 +33,6 @@ EXPOSE 8501
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"
-
-# Ollama-Host als Umgebungsvariable (default: host.docker.internal)
-ENV OLLAMA_HOST=host.docker.internal:11434
 
 # Streamlit-Konfiguration
 ENV STREAMLIT_SERVER_PORT=8501

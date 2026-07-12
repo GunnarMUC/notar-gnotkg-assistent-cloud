@@ -1,5 +1,5 @@
-# docker-compose.yml – Notar GNotKG Assistent
-# App im Container, Ollama läuft nativ auf dem Host (localhost:11434)
+# docker-compose.yml – Notar GNotKG Assistent Cloud
+# Cloud-API-Version: externe LLM-Provider via LiteLLM, kein lokaler Ollama-Dienst nötig
 
 version: "3.9"
 
@@ -21,8 +21,6 @@ services:
       # Optional: GNotKG-XML als Read-Only
       - ../Gesetze:/app/Gesetze:ro
     environment:
-      # Verbindung zum Host-Ollama (localhost des Hosts)
-      - OLLAMA_HOST=host.docker.internal:11434
       - STREAMLIT_SERVER_PORT=8501
       - STREAMLIT_SERVER_ADDRESS=127.0.0.1
       - STREAMLIT_SERVER_HEADLESS=true
@@ -39,9 +37,7 @@ services:
         reservations:
           memory: 1G
 
-# Hinweise für Apple Silicon (M-Serie):
-# - Ollama läuft nativ auf dem Mac, NICHT im Container (Metal-Beschleunigung)
-# - Der Container verbindet sich via host.docker.internal:11434 zum Host-Ollama
-# - Für Linux-Hosts: host.docker.internal funktioniert ab Docker 20.10+
-# - Optional: Netzwerk-Modus "host" für Linux (nicht macOS):
-#   network_mode: host  (dann OLLAMA_HOST=localhost:11434)
+# Hinweise:
+# - Die App benötigt ausgehenden HTTPS-Zugriff zum gewählten LLM-Provider.
+# - API-Keys werden entweder über die UI verschlüsselt in ../data gespeichert
+#   oder beim Container-Start via Umgebungsvariable (z. B. MISTRAL_API_KEY) übergeben.

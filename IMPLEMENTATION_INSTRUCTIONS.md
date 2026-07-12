@@ -1,264 +1,286 @@
-# Implementierungsanleitung für Coding-Agents – Notar GNotKG Assistent
+# Implementation Instructions – Notar GNotKG Assistent Cloud
 
-**Ziel dieses Dokuments**: Ein Coding-Agent (Cursor, Claude Artifacts, Aider, Windsurf, OpenDevin etc.) soll mit diesem Briefing-Paket in der Lage sein, die komplette App eigenständig und korrekt zu implementieren.
-
-**Wichtige Prinzipien für die Umsetzung**:
-1. **Human-in-the-Loop ist nicht optional** – jede KI-Extraktion muss editierbar und bestätigungspflichtig sein.
-2. **Gebührenbeträge dürfen niemals vom LLM berechnet werden** – nur die Fee Engine (deterministisch).
-3. **Auditierbarkeit hat höchste Priorität**.
-4. Lean halten – zuerst MVP, dann erweitern.
-5. Alles auf Deutsch (UI-Texte, Fehlermeldungen, Rechnungen, Logs).
+This document is the concrete, developer-oriented guide for building the **cloud-only version** of the Notar GNotKG Assistent. It replaces the previous Ollama/local-LLM implementation with an API-first architecture using external cloud providers (Mistral, Anthropic, xAI, Moonshot/Kimi, DeepSeek) via LiteLLM.
 
 ---
 
-## Phase 0: Projekt-Setup (Grundgerüst)
+## 1. Repository
 
-### 0.1 Projekt initialisieren
-```bash
-mkdir notar-gnotkg-app
-cd notar-gnotkg-app
-uv init --python 3.12
-uv add streamlit ollama pydantic pydantic-settings pymupdf pytesseract python-docx pandas openpyxl jinja2 httpx loguru sqlalchemy
-# ggf. weitere
-```
+- **GitHub Repo:** `github.com/GunnarMUC/notar-gnotkg-assistent-cloud`
+- **Language:** Python 3.12
+- **Package Manager:** `uv`
+- **License:** MIT (adjust if required)
 
-Erstelle folgende Ordnerstruktur:
+---
+
+## 2. Tech Stack
+
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| UI | Streamlit | Local browser, optional password protection |
+| LLM Orchestration | LiteLLM | Unified interface to multiple cloud providers |
+| HTTP / API calls | `httpx` (via LiteLLM) | Managed by LiteLLM internally |
+| Encryption | `cryptography` (Fernet/PBKDF2) | Same as notary profile encryption |
+| Database | SQLite + JSON | Local only |
+| Config | `.env` + `core/config.py` | Provider configs, no keys in repo |
+| Testing | pytest + coverage | 77 tests, ~91% coverage |
+| CI/CD | GitHub Actions | ruff, mypy, pytest, gitleaks, semgrep, pip-audit |
+
+---
+
+## 3. Project Structure
+
 ```
-notar-gnotkg-app/
-├── app.py
-├── core/
-│   ├── __init__.py
-│   ├── models.py
-│   ├── document_parser.py
-│   ├── llm_extractor.py
-│   ├── fee_engine.py
-│   ├── invoice_generator.py
-│   ├── excel_logger.py
-│   ├── gnotkg_checker.py
-│   └── config.py
-├── prompts/
-│   └── extraction_v1.txt
-├── templates/
-│   └── invoice_template.md          # oder .html / .docx-Template
-├── data/
-│   ├── notary_profile.json
-│   └── fee_tables/
-│       └── v2026_01.json            # Beispiel für versionierte Tabellen
-├── history/                         # wird zur Laufzeit angelegt
-├── tests/
+notar-gnotkg-assistent-cloud/
+├── app.py                          # Streamlit entry point
+├── .env.example                    # Empty placeholders only
+├── pyproject.toml                  # Dependencies, ruff, pytest, mypy
+├── uv.lock                         # Locked dependencies
 ├── docker/
-└── README.md (bereits vorhanden)
+│   ├── Dockerfile
+│   └── docker-compose.yml
+├── prompts/
+│   └── ...                         # LLM prompt templates
+├── core/
+│   ├── config.py                   # Provider config, default model
+│   ├── models.py                   # Pydantic data models
+│   ├── llm_providers.py            # NEW: Cloud provider layer (LiteLLM)
+│   ├── provider_key_store.py       # NEW: Encrypted API-key storage
+│   ├── llm_extractor.py            # Refactored: LLM extraction
+│   ├── fee_calculator.py
+│   ├── document_parser.py
+│   ├── profile_crypto.py
+│   ├── notary_profile.py
+│   ├── state_manager.py
+│   └── document_manager.py
+├── ui/
+│   ├── sidebar.py                  # Provider selection + API-key input
+│   ├── extraction.py
+│   ├── state.py
+│   ├── helpers.py
+│   └── screens.py
+└── tests/
+    ├── test_llm_providers.py       # NEW
+    ├── test_provider_key_store.py  # NEW
+    ├── test_llm_extractor.py       # Updated
+    └── ...
 ```
 
-### 0.2 Pydantic-Modelle (`core/models.py`)
-Definiere klare Modelle:
-- `ExtractedPosition`
-- `InvoicePosition` (final bestätigt)
-- `NotaryProfile`
-- `GeneratedInvoice`
-- `AuditLogEntry`
-
-Verwende `Field(..., description=...)` für gute LLM-Outputs.
-
 ---
 
-## Phase 1: Dokumenten-Parsing
+## 4. Phase-by-Phase Implementation
 
-**Datei**: `core/document_parser.py`
+### Phase 0: Cleanup
 
-**Anforderungen**:
-- Funktion `parse_document(file_path: str) -> ParsedDocument`
-- `ParsedDocument` enthält: `full_text`, `pages`, `metadata`, `extraction_quality` (enum: good / ocr_fallback / poor)
-- Für PDF: `pymupdf` zuerst versuchen (Text + Layout). Bei sehr wenig Text → OCR mit `pytesseract`.
-- OCR nur bei Bedarf (Konfigurations-Flag).
-- Deutsche Sprache für Tesseract hart codieren (`lang='deu'`).
-- Fehlerbehandlung: Bei totalem Fehlschlag → klare Fehlermeldung + Möglichkeit manueller Texteingabe.
+- Remove the `ollama` Python dependency.
+- Remove `verfuegbare_LLMs.txt`.
+- Delete any Ollama-specific checks or environment variables.
 
-**Tipp**: Gute Hilfsfunktion zum Konvertieren von PDF-Seiten in Bilder für OCR.
+### Phase 1: Add Dependencies
 
----
+In `pyproject.toml`:
 
-## Phase 2: LLM-Extraktion mit Structured Output
-
-**Datei**: `core/llm_extractor.py`
-
-**Kernfunktion**:
-```python
-def extract_from_text(
-    text: str,
-    model: str = "qwen2.5:14b-instruct-q5_K_M",
-    temperature: float = 0.1
-) -> ExtractionResult:
+```toml
+dependencies = [
+    "streamlit>=1.45.0",
+    "litellm>=1.72.0",
+    "pydantic>=2.10.0",
+    "python-dotenv>=1.1.0",
+    "loguru>=0.7.0",
+    "httpx>=0.28.0",
+    "cryptography>=44.0.0",
+    "pandas>=2.2.0",
+    "sqlalchemy>=2.0.0",
+    "openpyxl>=3.1.0",
+    "pypdf>=5.1.0",
+]
 ```
 
-**Wichtige Techniken**:
-- Verwende Ollama mit `format="json"` + Pydantic-Modell.
-- Bei Fehlschlag: Retry mit angepasstem Prompt (max. 2–3 Versuche).
-- System-Prompt + Few-Shot-Examples stark in `prompts/extraction_v1.txt` auslagern (siehe `LLM_PROMPTS.md`).
-- Das LLM soll **nur vorschlagen** – keine finalen Beträge berechnen.
+Run:
 
-**Output-Modell** (Beispiel):
-```python
-class ExtractedPosition(BaseModel):
-    kv_number: str | None = Field(..., description="z.B. '21200' oder 'KV 21200'")
-    description: str
-    business_value_eur: float | None
-    source_reference: str          # "Seite 3, Absatz 2" oder "Ziffer 4.1"
-    confidence: float = Field(..., ge=0, le=1)
-    reasoning: str
+```bash
+uv add litellm
+uv sync --locked
 ```
 
-`ExtractionResult` enthält Liste von Positionen + erkannte Mandanten + allgemeine Hinweise.
+### Phase 2: Implement Cloud Provider Layer
+
+Create `core/llm_providers.py` with:
+
+- A `ProviderConfig` dataclass / enum.
+- A mapping of provider names to LiteLLM model identifiers and API-key environment variables.
+- A function `get_llm_response(provider, prompt, model, api_key, temperature, max_tokens)` that calls `litellm.completion`.
+- Graceful error handling for missing keys, auth failures, rate limits, and network errors.
+- Optional `mock_mode` for tests.
+
+Environment variables accepted by LiteLLM for each provider (e.g. `MISTRAL_API_KEY`, `ANTHROPIC_API_KEY`, `XAI_API_KEY`, `MOONSHOT_API_KEY`, `DEEPSEEK_API_KEY`).
+
+### Phase 3: Implement Encrypted API-Key Storage
+
+Create `core/provider_key_store.py`:
+
+- Load/save `data/provider_keys.json`.
+- Encrypt keys with the same master password and `profile_crypto.py` utilities.
+- Support retrieving keys by provider name.
+- Support deleting / updating keys.
+
+Update `core/config.py`:
+
+- Define `DEFAULT_PROVIDER = "mistral"`.
+- Add `PROVIDER_CONFIGS` mapping.
+- Add helper to read optional environment API keys.
+
+### Phase 4: Refactor LLM Extraction
+
+Update `core/llm_extractor.py`:
+
+- Replace Ollama calls with calls to `core/llm_providers.get_llm_response`.
+- Accept `provider` and `api_key` parameters.
+- Validate API key presence (UI or environment) before calling.
+- Keep the same prompt assembly and JSON parsing logic.
+- Keep retry logic for transient provider errors.
+
+### Phase 5: Refactor UI
+
+Update `ui/sidebar.py`:
+
+- Add a provider selection dropdown.
+- Add a password-masked API-key input.
+- Add a cloud-warning info box.
+- Store the encrypted key via `provider_key_store.py` when the user saves.
+
+Update `ui/state.py`:
+
+- Add session-state keys: `provider`, `api_key`, `api_key_source`.
+
+Update `ui/helpers.py`:
+
+- Add `load_provider_key()`, `save_provider_key()` helpers.
+- Ensure keys are encrypted before persistence and decrypted when needed for a request.
+
+Update `app.py`:
+
+- Show a persistent cloud warning at the top.
+- Prompt the user to set an API key if none is configured.
+
+Update `ui/extraction.py`:
+
+- Pass the selected provider and API key to `extract_from_text`.
+- Display clear error messages for missing/invalid keys.
+
+### Phase 6: Tests
+
+Write `tests/test_llm_providers.py`:
+
+- Test provider configuration lookup.
+- Test model name resolution.
+- Test missing key detection.
+- Test mock response path.
+- Test error handling.
+
+Write `tests/test_provider_key_store.py`:
+
+- Test save/load with encryption.
+- Test invalid password handling.
+- Test missing key file.
+- Test key deletion.
+
+Update `tests/test_llm_extractor.py`:
+
+- Replace Ollama mocks with LiteLLM mocks.
+- Test provider/API-key parameter flow.
+- Test JSON fallback extraction.
+
+Run tests until coverage is ≥ 90%.
+
+### Phase 7: Docker & Deployment
+
+Update `docker/Dockerfile`:
+
+- Remove Ollama installation and service start.
+- Keep `uv` / multi-stage build for Python dependencies.
+- Expose `8501`.
+- Ensure no secrets in image layers.
+
+Update `docker/docker-compose.yml`:
+
+- Remove `ollama` service.
+- Mount a local `data/` directory for persistence.
+
+### Phase 8: Documentation
+
+Update or create:
+
+- `README.md` – Cloud usage, API-key setup, provider list.
+- `SECURITY.md` – Cloud warning, encrypted keys, data flow.
+- `DEPLOYMENT.md` – No Ollama required.
+- `TECH_STACK_AND_DEPENDENCIES.md` – Replace Ollama with LiteLLM.
+- `ARCHITECTURE.md` – Update data-flow diagram / description.
+- `UI_SCREENS_AND_FLOW.md` – Provider selection, API-key screen, cloud warnings.
+- `LLM_PROVIDERS.md` – Supported providers and model identifiers.
+- `LLM_OPTIONS.md` – Choosing a provider.
+- `SECURITY_AUDIT_REPORT.md` – Audit for cloud version.
+- `UMSETZUNGSREPORT.md` – Implementation report.
+- `FUNCTIONAL_SPECIFICATION.md` – Replace “local LLM” with “cloud LLM”.
+- `IMPLEMENTATION_INSTRUCTIONS.md` – This file.
+
+### Phase 9: CI/CD
+
+Ensure `.github/workflows/ci.yml` runs:
+
+- `ruff format --check` and `ruff check`
+- `mypy .`
+- `pytest` with `--cov` threshold
+- Gitleaks (manual binary download to avoid GitHub Action edge cases)
+- Semgrep
+- pip-audit
+
+Fix any failing steps before merging to `main`.
 
 ---
 
-## Phase 3: Fee Engine (deterministisch)
+## 5. Environment Variables
 
-**Datei**: `core/fee_engine.py` – **Höchste Priorität & Sorgfalt**
+All API keys can be provided either via the Streamlit UI (encrypted local storage) or via environment variables. The UI values take precedence over environment variables if present.
 
-**Design**:
-- Klasse `FeeEngine` mit Versions-String (z. B. `"GNotKG_Stand_2026-01-01_v1"`)
-- Interne Datenstruktur: JSON oder Python-Dicts mit den aktuellen Tabellenwerten (Anlage 2).
-- Methoden:
-  - `calculate_fee(kv_number: str, business_value: float, **kwargs) -> FeeCalculation`
-  - `get_available_kv_numbers() -> list[str]`
-  - `validate_combination(positions: list[...]) -> list[str]` (Warnungen bei unüblichen Kombinationen)
-
-**Für MVP**:
-- Implementiere zuerst 5–8 häufige Tatbestände exakt (z. B. Beurkundung Immobilienkauf, GmbH-Gründung, Testament, Grundschuld, Vollzug, Betreuung).
-- Verwende die offiziellen Tabellenwerte (gestaffelte Beträge).
-- Für komplexere Fälle: Placeholder + klare Fehlermeldung „Diese Kombination bitte manuell prüfen“.
-
-**Wichtig**:
-- Die Fee Engine **darf nie** vom LLM aufgerufen werden.
-- Alle Beträge müssen exakt mit der offiziellen Tabelle übereinstimmen (Nachrechnen mit Beispielen aus notar.de oder gnotkg.de).
-
----
-
-## Phase 4: Invoice Generator
-
-**Datei**: `core/invoice_generator.py`
-
-- Funktion `generate_invoice(final_positions: list[InvoicePosition], notary: NotaryProfile, ...) -> GeneratedInvoice`
-- Verwende `python-docx` für DOCX (empfohlen).
-- Für RTF: Entweder Pandoc aufrufen oder einfachen Text + später Konvertierung.
-- Template-Ansatz: Basis-Layout in Jinja2 oder direkt im Code aufbauen (Header, Tabelle, Summen, Footer mit Disclaimer).
-- Integriere immer:
-  - Aktuelle Fee-Engine-Version
-  - Erstellungsdatum
-  - Deutlichen Haftungshinweis
-
----
-
-## Phase 5: Excel Logger & Audit
-
-**Datei**: `core/excel_logger.py`
-
-- Bei jeder erfolgreichen Rechnungserstellung einen neuen Eintrag erzeugen.
-- Struktur:
-  - Ein Haupt-Sheet „Übersicht“
-  - Ein Detail-Sheet pro Rechnung (benannt nach Rechnungs-ID)
-- Verwende `openpyxl` für Formatierung (Farben für Overrides, fette Summen, etc.).
-- Speichere zusätzlich eine JSON-Version des vollständigen Audit-Logs (einfacher zu parsen).
-
----
-
-## Phase 6: GNotKG Checker
-
-**Datei**: `core/gnotkg_checker.py`
-
-Einfache, robuste Implementierung:
-```python
-def check_gnotkg_version() -> GnotkgStatus:
-    # httpx.get("https://www.gesetze-im-internet.de/gnotkg/")
-    # BeautifulSoup oder regex für "Stand: DD.MM.YYYY"
-    # Vergleich mit local_version
+```bash
+# Example .env (not committed)
+MISTRAL_API_KEY=...
+ANTHROPIC_API_KEY=...
+XAI_API_KEY=...
+MOONSHOT_API_KEY=...
+DEEPSEEK_API_KEY=...
 ```
 
-Bei Abweichung: `status = "OUTDATED"` + Warnmeldung für die UI.
+Never commit `.env` or `data/` files.
 
 ---
 
-## Phase 7: Streamlit UI (`app.py`)
+## 6. Quality Gates
 
-**Empfohlener Aufbau** (Single-File zuerst, später aufteilen):
+Before considering the implementation complete, verify:
 
-```python
-import streamlit as st
-from core import ...
-
-st.set_page_config(page_title="Notar GNotKG Assistent", layout="wide")
-
-# Sidebar: Notar-Profil + LLM-Auswahl + GNotKG-Status
-# Hauptbereich:
-# 1. Upload-Bereich
-# 2. Nach erfolgreichem Parse: "Extraktion starten" Button
-# 3. st.data_editor() für die extrahierten / finalen Positionen (live update)
-# 4. Separate Section für Auslagen + Gesamtsumme-Vorschau
-# 5. Button "Rechnung generieren" (nach Bestätigung)
-# 6. Download-Buttons für alle Formate + Excel-Log
-```
-
-**Wichtige Streamlit-Patterns**:
-- `st.session_state` für den aktuellen Workflow-Zustand
-- `st.data_editor` mit `on_change` Callback → sofortige Neuberechnung
-- `st.columns` für gutes Layout (Original-Vorschau | Editier-Tabelle)
-- Gute Error- und Success-Messages
-- Deutliche visuelle Unterscheidung: „KI-Vorschlag“ vs. „Final bestätigt“
+- [ ] `uv sync --locked` succeeds
+- [ ] `ruff format --check` succeeds
+- [ ] `ruff check` succeeds
+- [ ] `mypy .` succeeds
+- [ ] `pytest` passes (77 tests)
+- [ ] Coverage ≥ 80 % (currently ~91 % total / ~85 % core modules)
+- [ ] Gitleaks finds 0 secrets
+- [ ] Semgrep finds 0 issues
+- [ ] pip-audit finds 0 vulnerabilities
+- [ ] CI badge is green on `main`
 
 ---
 
-## Phase 8: Datenpersistenz & Config
+## 7. Common Pitfalls
 
-- `data/notary_profile.json` (einfach lesbar/schreibbar)
-- SQLite in `data/notar_app.db` für History + Audit
-- Tabellen: `invoices`, `audit_logs`, `positions`
-- Config via `pydantic-settings` + `.env` oder JSON
-
----
-
-## Phase 9: Error Handling, Logging & Disclaimer
-
-- Überall klare, deutsche Fehlermeldungen.
-- `loguru` für strukturierte Logs (auch in Datei).
-- In jeder generierten Rechnung und im UI ein klarer Disclaimer:
-  > „Diese Rechnung wurde mit Unterstützung eines KI-Tools erstellt. Die alleinige Verantwortung für die Richtigkeit und die Einhaltung des Gerichts- und Notarkostengesetzes (GNotKG) liegt beim Notar.“
+1. **Hardcoding API keys** – Always use the key store or environment variables. Never push keys.
+2. **Logging keys** – Ensure `llm_providers.py` logs only provider/model, never the key.
+3. **Missing key validation** – `llm_extractor.py` must fail gracefully if no key is available.
+4. **LiteLLM fallback** – If a provider fails, return a clear error to the user; do not silently switch providers.
+5. **Test isolation** – Mock `litellm.completion` so tests run without real API keys.
 
 ---
 
-## Phase 10: Testing & Qualitätssicherung
-
-- Mindestens:
-  - Unit-Tests für die Fee Engine (mit bekannten Beispielen aus der Praxis)
-  - Integrationstests für Extraction → Fee Engine → Invoice
-  - Manuelle Tests mit 5–10 anonymisierten realen Urkunden verschiedener Typen
-- Edge-Cases dokumentieren: Sehr hohe/niedrige Werte, ungewöhnliche Tatbestände, schlechte OCR-Qualität.
-
----
-
-## Empfohlene Reihenfolge der Implementierung (praktisch)
-
-1. Projekt-Setup + Modelle
-2. Document Parser (ohne OCR zuerst)
-3. Streamlit-Grundgerüst mit Upload + Dummy-Daten
-4. Fee Engine (mit 4–5 Tatbeständen) + Invoice Generator (DOCX)
-5. LLM Extractor + Prompts
-6. Integration Extraction → editierbare Tabelle → Fee Engine
-7. Excel Logger + Audit
-8. GNotKG Checker + Notar-Profil
-9. Polish, Error-Handling, Disclaimer, Tests
-
----
-
-**Nach Fertigstellung des MVP**:
-- Ausführliche Tests mit echten Urkunden
-- Feedback-Schleife mit Notar
-- Erweiterung der Fee Engine auf weitere häufige Tatbestände
-- Verbesserung der Prompts anhand realer Fehler
-
----
-
-Du (der Coding-Agent) hast jetzt alle notwendigen Informationen.  
-Beginne mit Phase 0 und arbeite dich systematisch durch. Bei Unklarheiten zu GNotKG-Details oder Beispielen: Die Briefing-Dateien `FEE_CALCULATION_LOGIC.md` und `LLM_PROMPTS.md` enthalten weitere Hinweise.
-
-Viel Erfolg – die App wird Notaren helfen und gleichzeitig höchste rechtliche Standards einhalten.
+*Last updated: 12 July 2026*
