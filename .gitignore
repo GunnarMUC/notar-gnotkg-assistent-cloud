@@ -20,6 +20,7 @@ dist/
 
 # Sensible Daten – niemals committen!
 data/notary_profile.json
+data/provider_keys.json
 data/notar_app.db
 data/generated_invoices/
 history/
@@ -27,9 +28,6 @@ history/
 # Environment
 .env
 *.env.local
-
-# Ollama
-.ollama/
 
 # Streamlit
 .streamlit/secrets.toml

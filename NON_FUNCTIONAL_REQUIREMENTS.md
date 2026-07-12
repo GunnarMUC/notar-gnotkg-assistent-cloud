@@ -1,4 +1,4 @@
-# Nicht-funktionale Anforderungen – Notar GNotKG Assistent
+# Nicht-funktionale Anforderungen – Notar GNotKG Assistent Cloud
 
 ## 1. Performance & Effizienz
 
@@ -8,11 +8,11 @@
 
 ### NFR-P02: Dokument-Parsing
 - PDF-Parsing (Text-Modus): **< 3 Sekunden** für Dokumente bis 50 Seiten
-- OCR-Fallback (gescanntes PDF): **< 30 Sekunden** für 10 Seiten (auf Apple Silicon M-Serie)
+- OCR-Fallback (gescanntes PDF): **< 30 Sekunden** für 10 Seiten
 - Fortschrittsanzeige bei OCR-Verarbeitung
 
 ### NFR-P03: LLM-Extraktion
-- Extraktion einer Urkunde (bis 10.000 Tokens): **< 30 Sekunden** mit Qwen2.5-14B auf Apple Silicon M-Serie
+- Extraktion einer Urkunde (bis 10.000 Tokens): **< 60 Sekunden** über den gewählten Cloud-Provider (abhängig von Netzwerk und Provider)
 - Bei > 30 Sekunden: Spinner mit Statusmeldung
 - Abbruch-Möglichkeit für den Nutzer
 
@@ -29,7 +29,8 @@
 ## 2. Zuverlässigkeit & Fehlertoleranz
 
 ### NFR-R01: Graceful Degradation
-- Bei nicht erreichbarem Ollama: Klare Fehlermeldung mit Hinweis zur Fehlerbehebung (Ollama gestartet? Modell vorhanden?), manuelle Texteingabe als Fallback
+- Bei fehlendem oder ungültigem API-Key: Klare Fehlermeldung mit Hinweis zur Key-Eingabe in der Sidebar
+- Bei Rate-Limit oder API-Fehler des Providers: Benutzerfreundliche Meldung und Vorschlag, später erneut zu versuchen
 - Bei fehlgeschlagenem GNotKG-Check: Warnung, aber App bleibt nutzbar (Offline-Modus)
 - Bei PDF-Parsing-Fehler: Fallback auf manuelle Texteingabe
 
@@ -48,38 +49,41 @@
 
 ## 3. Sicherheit
 
-### NFR-S01: Netzwerkisolation
-- **Keine ausgehenden Verbindungen** außer:
-  - `localhost:11434` (Ollama API)
+### NFR-S01: Netzwerkverbindungen
+- **Ausgehende Verbindungen** nur zu:
+  - Dem gewählten Cloud-LLM-Provider (Mistral, Anthropic, xAI, Moonshot, DeepSeek)
   - `gesetze-im-internet.de` (optionaler GNotKG-Check, einmalig beim Start)
 - Keine Telemetrie, kein Crash-Reporting, kein Tracking
-- Docker-Container: `network_mode: host` oder explizites Port-Mapping nur für Ollama
+- Docker-Container: Ausgehender Internetzugriff zu den gewählten Providern erforderlich
 
 ### NFR-S02: Authentifizierung & Zugriff
 - **Keine Benutzer-Authentifizierung** erforderlich (lokale Single-User-App)
 - Streamlit-App läuft standardmäßig nur auf `localhost:8501`
-- Optionaler Passwort-Schutz für Streamlit (empfehlen in DEPLOYMENT.md dokumentieren)
+- Optionaler Passwort-Schutz für Streamlit (empfohlen in DEPLOYMENT.md dokumentieren)
 
 ### NFR-S03: Datensicherheit
-- Alle Daten (Urkunden, Profile, Rechnungen, Logs) ausschließlich im lokalen Dateisystem
-- Keine Cloud-Speicherung, keine Uploads an Dritte
+- Alle Daten (Urkunden, Profile, Rechnungen, Logs, API-Keys) ausschließlich im lokalen Dateisystem
+- API-Keys werden verschlüsselt in `data/provider_keys.json` gespeichert
+- Keine Cloud-Speicherung von Keys oder Profilen, aber Urkundeninhalte werden zur Verarbeitung an den gewählten Provider übermittelt
 - SQLite-Datenbank im App-Datenverzeichnis (`data/`)
-- Gitignore: `data/history/`, `data/notar_profile.json`, `data/notar_app.db`
+- Gitignore: `data/history/`, `data/notar_profile.json`, `data/provider_keys.json`, `data/notar_app.db`
 
 ### NFR-S04: Secrets Management
 - Keine hartcodierten Secrets, API-Keys oder Tokens im Code
 - Notar-Profil (IBAN, Steuernummer) in `data/notary_profile.json` – Zugriff nur lokal
-- `.env`-Datei für optionale Konfiguration (Ollama-Host, Port etc.) – nicht ins Git-Repo
+- API-Keys in `data/provider_keys.json` – verschlüsselt mit demselben Master-Passwort wie das Notar-Profil
+- `.env`-Datei für optionale Konfiguration (LLM-Provider, API-Keys) – nicht ins Git-Repo
 
 ---
 
-## 4. Datenschutz & DSGVO-Konformität
+## 4. Datenschutz & DSGVO
 
 ### NFR-D01: Datenminimierung
 - App speichert nur das absolut Notwendige:
   - Notar-Profil (einmalig)
   - Generierte Rechnungen (Archiv)
   - Audit-Logs (Abrechnungszwecke)
+  - Verschlüsselte API-Keys
 - Keine Speicherung ganzer Urkundentexte über die aktuelle Session hinaus (konfigurierbar)
 
 ### NFR-D02: Datenhoheit
@@ -89,7 +93,8 @@
 
 ### NFR-D03: Verarbeitungsverzeichnis
 - Klarer Hinweis in Dokumentation, welche Daten wie verarbeitet werden
-- Keine personenbezogenen Daten verlassen das lokale Gerät (außer sie sind in der generierten Rechnung selbst)
+- Urkundeninhalte verlassen das lokale Gerät zur Verarbeitung durch den gewählten Cloud-LLM-Provider
+- Der Nutzer ist für die datenschutzkonforme Nutzung und ggf. einen Auftragsverarbeitungsvertrag mit dem Provider verantwortlich
 
 ---
 
@@ -123,13 +128,12 @@
 
 ### NFR-C01: Primärplattform macOS
 - Entwickelt und getestet auf macOS 14+ (Sonoma) und 15+ (Sequoia) auf Apple Silicon (M1–M4)
-- Ollama nativ auf macOS (Metal-Beschleunigung)
 - Streamlit-Betrieb im Standard-Browser (Safari, Chrome, Firefox)
 
 ### NFR-C02: Sekundärplattformen
-- Linux (Ubuntu 22.04+, Debian 12+): Grundsätzlich lauffähig mit Anpassungen (Ollama läuft nativ)
-- Windows: Lauffähig mit WSL2 (Ollama im WSL2, Streamlit ebenfalls)
-- Docker: Primär für Linux/macOS; auf Apple Silicon ohne Ollama im Container (Trennung empfohlen)
+- Linux (Ubuntu 22.04+, Debian 12+): Grundsätzlich lauffähig
+- Windows: Lauffähig mit WSL2
+- Docker: Primär für Linux/macOS
 
 ### NFR-C03: Browser
 - Safari 17+, Chrome 120+, Firefox 120+ (aktuelle Versionen)
@@ -148,7 +152,7 @@
 - Fee-Engine: Versioniert mit GNotKG-Stand-Datum (z. B. `v2026_01`)
 - Prompts: Versioniert in `prompts/extraction_vX.txt`
 - App-Version in `pyproject.toml` oder `__init__.py`
-- Jede generierte Rechnung enthält die verwendeten Versionen (Fee-Engine + LLM + Prompt)
+- Jede generierte Rechnung enthält die verwendeten Versionen (Fee-Engine + LLM-Provider + Modell + Prompt)
 
 ### NFR-M03: Konfigurierbarkeit
 - Alle Pfade und Parameter über `pydantic-settings` + `.env` oder JSON konfigurierbar
@@ -185,6 +189,7 @@
 
 ### NFR-DOC02: Nutzerdokumentation
 - Vollständige Installations- und Nutzungsanleitung (`DEPLOYMENT.md`)
+- Provider-spezifische Anleitung (`LLM_PROVIDERS.md`)
 - Erklärungen zu GNotKG-Grundlagen in der App (Tooltipps, Hilfe-Button)
 - Disclaimer rechtssicher und prominent
 

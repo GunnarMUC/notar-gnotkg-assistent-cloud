@@ -1,132 +1,83 @@
-# Deployment & Installation – Notar GNotKG Assistent
+# Deployment & Installation – Notar GNotKG Assistent Cloud
 
 ## Voraussetzungen
 
 ### Hardware (empfohlen)
-- Apple Silicon Mac (M1/M2/M3/M4) mit **≥ 16 GB RAM**
-- ≥ 24 GB RAM für 14B-Modelle in hoher Quantisierung (z. B. Qwen2.5-14B Q6)
-- ≥ 15 GB freier Festplattenspeicher (Ollama + Modelle + App + Daten)
 
-### macOS
-- macOS 14 (Sonoma) oder neuer
-- Optional: Xcode Command Line Tools (`xcode-select --install`) für `uv`/`pip`
+- Jeder moderne Rechner mit **≥ 8 GB RAM** (keine GPU nötig, da alles über Cloud-APIs läuft)
+- ≥ 2 GB freier Festplattenspeicher
 
-### Alternative Plattformen
-- **Linux** (Ubuntu 22.04+, Debian 12+): Voll unterstützt (AMD64 oder ARM64)
-- **Windows**: Mit WSL2 (Ubuntu) – Ollama und App laufen im WSL2, Browser auf Windows
+### Software
 
----
+- **Python 3.12+**
+- **uv** (empfohlen) oder **pip**
+- Optional: **Tesseract OCR** für gescannte PDFs
 
-## 1. Ollama installieren
+### Cloud-Account
 
-### macOS
-```bash
-# Nativer macOS-Installer (empfohlen)
-# https://ollama.com → Download → Installieren
-# ODER via Homebrew:
-brew install ollama
-```
-
-Nach der Installation Ollama starten:
-```bash
-# Entweder die Ollama.app öffnen, oder:
-ollama serve
-# Läuft auf http://localhost:11434
-```
-
-### Linux
-```bash
-curl -fsSL https://ollama.com/install.sh | sh
-ollama serve
-```
+- Account bei einem unterstützten Provider (Mistral, Anthropic, xAI, Moonshot/Kimi, DeepSeek)
+- API-Key mit ausreichendem Guthaben
 
 ---
 
-## 2. LLM-Modell herunterladen
-
-**Empfohlen**: Qwen2.5-14B (beste Qualität für deutsche Rechtstexte)
+## 1. System-Abhängigkeiten (macOS)
 
 ```bash
-# Empfohlen: Qwen2.5-14B mit Q5_K_M Quantisierung (~10 GB)
-ollama pull qwen2.5:14b-instruct-q5_K_M
-
-# Alternative: Kleinere Modelle (weniger RAM, geringere Genauigkeit)
-ollama pull qwen2.5:7b              # ~4.7 GB
-ollama pull mistral-nemo:latest     # ~7.1 GB
-
-# Für Embeddings / RAG-Erweiterungen
-ollama pull nomic-embed-text:latest # ~274 MB
-```
-
-Verfügbare Modelle prüfen:
-```bash
-ollama list
-```
-
-> **Hinweis**: Der User kann später im UI frei zwischen installierten Modellen wechseln. Siehe auch `verfuegbare_LLMs.txt` für eine Liste getesteter Modelle.
-
----
-
-## 3. System-Abhängigkeiten (macOS)
-
-```bash
-# Tesseract OCR + deutsches Sprachpaket
+# OCR für gescannte PDFs
 brew install tesseract tesseract-lang-deu
 
-# Optional: Pandoc für RTF-Konvertierung
+# Optional: Pandoc für RTF-Generierung
 brew install pandoc
 ```
 
 **Linux** (Ubuntu/Debian):
+
 ```bash
 sudo apt-get install tesseract-ocr tesseract-ocr-deu pandoc
 ```
 
 ---
 
-## 4. Python-Umgebung einrichten
+## 2. Python-Umgebung einrichten
 
-### Mit uv (empfohlen, schnell & reproduzierbar)
+### Mit uv (empfohlen)
+
 ```bash
-# Projektverzeichnis
-cd notar-gnotkg-app
-
-# uv installieren (falls nicht vorhanden)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Virtuelle Umgebung erstellen + Abhängigkeiten installieren
+cd notar-gnotkg-assistent-cloud
 uv sync
 ```
 
-### Mit venv + pip (klassisch)
-```bash
-cd notar-gnotkg-app
-python -m venv .venv
-source .venv/bin/activate        # macOS/Linux
-# .venv\Scripts\activate         # Windows (WSL2)
+### Mit venv + pip
 
+```bash
+cd notar-gnotkg-assistent-cloud
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
 ---
 
-## 5. Notar-Profil einrichten
+## 3. LLM-Provider-Account einrichten
 
-Beim ersten Start der App wirst du durch ein Formular geführt:
+Wählen Sie einen Provider und erstellen Sie einen API-Key:
 
-- Name, Kanzlei, Adresse
-- Telefon, E-Mail
-- Bankverbindung (IBAN, BIC) für Rechnungen
-- Steuernummer / USt-ID (optional)
+| Provider | Anmeldung |
+|----------|-----------|
+| Mistral | https://console.mistral.ai |
+| Anthropic | https://console.anthropic.com |
+| xAI | https://console.x.ai |
+| Moonshot/Kimi | https://platform.moonshot.cn |
+| DeepSeek | https://platform.deepseek.com |
 
-Das Profil wird lokal in `data/notary_profile.json` gespeichert. Eine spätere Änderung ist jederzeit in der Sidebar möglich.
+Detaillierte Hinweise finden Sie in [LLM_PROVIDERS.md](LLM_PROVIDERS.md).
 
 ---
 
-## 6. App starten
+## 4. App starten
 
 ```bash
-cd notar-gnotkg-app
+cd notar-gnotkg-assistent-cloud
 
 # Mit uv:
 uv run streamlit run app.py
@@ -136,45 +87,68 @@ source .venv/bin/activate
 streamlit run app.py
 ```
 
-Die App öffnet sich unter **http://localhost:8501** im Browser.
+Die App öffnet sich unter **http://localhost:8501**.
+
+---
+
+## 5. Erster Durchlauf – Kurzanleitung
+
+1. **App starten** (siehe Schritt 4).
+2. **Notar-Profil ausfüllen** (automatisch beim ersten Start oder Sidebar).
+3. **LLM-Provider konfigurieren**:
+   - Sidebar → **LLM-Provider** erweitern.
+   - Provider und Modell auswählen.
+   - API-Key eingeben.
+   - Master-Passwort eingeben und auf **Speichern** klicken.
+4. **Beispielurkunde hochladen** (aus `Beispielurkunden/txt/` oder eigene Urkunde).
+5. **„Dokument analysieren“** klicken.
+6. **Extraktion prüfen** – Positionen bearbeiten/korrigieren.
+7. **„Finale Positionen bestätigen“** → Rechnung generieren.
+8. **Rechnung + Excel-Log herunterladen**.
+
+---
+
+## 6. API-Key-Verwaltung
+
+- API-Keys werden in `data/provider_keys.json` lokal verschlüsselt gespeichert.
+- Die Verschlüsselung nutzt dasselbe Master-Passwort wie das Notar-Profil.
+- Keys werden **niemals** im Git-Repository oder in der Cloud gespeichert.
+- Um Keys zu laden, Master-Passwort in der Sidebar eingeben und auf **Laden** klicken.
 
 ---
 
 ## 7. Docker (optional)
 
-Die App kann auch im Docker-Container betrieben werden. **Wichtig**: Ollama bleibt auf dem Host-System (nativ, wegen Metal-Beschleunigung auf Apple Silicon).
+Die App kann auch im Docker-Container betrieben werden.
 
 ```bash
 # Image bauen
-docker build -t notar-gnotkg-app -f docker/Dockerfile .
+docker build -t notar-gnotkg-cloud -f docker/Dockerfile .
 
-# Container starten (mit Zugriff auf Host-Ollama)
+# Container starten
 docker run -d \
-  --name notar-app \
+  --name notar-cloud \
   -p 8501:8501 \
   -v $(pwd)/data:/app/data \
   -v $(pwd)/history:/app/history \
-  --add-host host.docker.internal:host-gateway \
-  notar-gnotkg-app
-
-# Oder via docker-compose:
-docker compose -f docker/docker-compose.yml up -d
+  notar-gnotkg-cloud
 ```
 
-**Apple Silicon**: Docker Desktop hat keine vollständige GPU-Unterstützung für Ollama im Container. Deshalb die klare Trennung: App im Container, Ollama nativ auf dem Mac. Verbinde den Container via `host.docker.internal:11434` zum Host-Ollama.
+**Hinweis**: Da es sich um eine Cloud-Version handelt, ist kein lokaler Ollama-Dienst nötig. Der Container benötigt lediglich ausgehenden Internetzugang zu den gewählten LLM-Providern.
 
 ---
 
 ## 8. Verzeichnisstruktur nach Installation
 
 ```
-notar-gnotkg-app/
+notar-gnotkg-assistent-cloud/
 ├── data/
 │   ├── notary_profile.json          # Notar-Stammdaten
+│   ├── provider_keys.json           # Verschlüsselte API-Keys
 │   ├── notar_app.db                 # SQLite (History, Audit)
 │   ├── fee_tables/
 │   │   └── v2026_01.json            # Aktuelle Gebührentabelle
-│   └── generated_invoices/          # Erstellte Rechnungen (nach Erstellung)
+│   └── generated_invoices/          # Erstellte Rechnungen
 ├── history/
 │   └── audit_full.jsonl             # Append-Only Audit-Log
 └── prompts/
@@ -183,56 +157,46 @@ notar-gnotkg-app/
 
 ---
 
-## 9. Erster Durchlauf – Kurzanleitung
-
-1. **App starten** (siehe Schritt 6)
-2. **Notar-Profil ausfüllen** (automatisch beim ersten Start)
-3. **LLM-Modell auswählen** (Sidebar, Dropdown aus `ollama list`)
-4. **Beispielurkunde hochladen** (aus `Beispielurkunden/txt/` oder eigene Urkunde)
-5. **„Dokument analysieren“** klicken
-6. **Extraktion prüfen** – Positionen bearbeiten/korrigieren
-7. **„Finale Positionen bestätigen“** → Rechnung generieren
-8. **Rechnung + Excel-Log herunterladen**
-
----
-
-## 10. Updates
+## 9. Updates
 
 ### App-Update
+
 ```bash
 git pull
-uv sync                        # Neue Abhängigkeiten installieren
+uv sync
 ```
 
 ### Fee-Engine-Update
+
 Neue JSON-Tabelle in `data/fee_tables/` ablegen. Die App erkennt neue Versionen und warnt bei veralteten Tabellen. Details siehe `FEE_CALCULATION_LOGIC.md`.
 
 ### GNotKG-Aktualitätsprüfung
+
 Die App prüft beim Start automatisch auf `gesetze-im-internet.de`, ob die lokale GNotKG-Version noch aktuell ist. Bei Abweichung erscheint eine Warnung im UI.
 
 ---
 
-## 11. Fehlerbehebung
+## 10. Fehlerbehebung
 
 | Problem | Lösung |
 |---------|--------|
-| **Ollama nicht erreichbar** | `ollama serve` ausführen oder Ollama.app öffnen |
-| **Modell nicht gefunden** | `ollama pull qwen2.5:14b-instruct-q5_K_M` |
+| **Authentifizierung fehlgeschlagen** | API-Key in der Sidebar prüfen; Key im Provider-Portal erneut erstellen. |
+| **Rate-Limit erreicht** | Später erneut versuchen oder anderen Provider wählen. |
+| **Modell nicht gefunden** | Modellbezeichnung in der Provider-Dokumentation prüfen. |
+| **Kein API-Key hinterlegt** | Sidebar → LLM-Provider → Key eingeben und speichern. |
 | **OCR funktioniert nicht** | `tesseract --list-langs` – muss `deu` enthalten; `brew install tesseract-lang-deu` |
-| **Nicht genug RAM** | Kleineres Modell verwenden (z. B. `qwen2.5:7b`) |
 | **Streamlit-Port belegt** | `streamlit run app.py --server.port 8502` |
 | **GNotKG-Check schlägt fehl** | Kein Internet oder Firewall; App bleibt offline nutzbar |
 
 ---
 
-## 12. Sicherheitshinweise
+## 11. Sicherheitshinweise
 
-- Die App ist für den **lokalen Einzelplatz-Betrieb** ausgelegt
-- Streamlit läuft standardmäßig nur auf `localhost` (nicht aus dem Netzwerk erreichbar)
-- Keine Daten verlassen das Gerät (außer optionaler GNotKG-Check)
-- Notar-Profil und IBAN liegen unverschlüsselt im lokalen Dateisystem → Zugriff nur durch macOS-Benutzerkonten geschützt
-- Optionaler Passwort-Schutz kann via Streamlit Secrets oder `.streamlit/secrets.toml` eingerichtet werden
+- Die App ist für den **lokalen Einzelplatz-Betrieb** ausgelegt.
+- Streamlit läuft standardmäßig nur auf `localhost` (nicht aus dem Netzwerk erreichbar).
+- API-Keys und Notar-Profil liegen verschlüsselt im lokalen Dateisystem.
+- Urkundeninhalte werden an den gewählten Cloud-Provider übermittelt.
 
 ---
 
-**Bei Problemen oder Fragen**: Siehe `README.md`, `ARCHITECTURE.md` oder die weiteren Briefing-Dateien.
+**Bei Problemen oder Fragen**: Siehe `README.md`, `LLM_PROVIDERS.md` oder `SECURITY.md`.

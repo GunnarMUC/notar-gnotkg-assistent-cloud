@@ -5,6 +5,7 @@ from typing import Any
 import streamlit as st
 
 from core.config import get_settings
+from core.llm_providers import get_default_model
 
 settings = get_settings()
 
@@ -15,7 +16,10 @@ DEFAULTS: dict[str, Any] = {
     "final_positions": [],
     "generated_invoice": None,
     "generated_audit": None,
-    "llm_model": settings.ollama_default_model,
+    "llm_provider": settings.llm_provider,
+    "llm_model": settings.llm_model or get_default_model(settings.llm_provider),
+    "provider_keys": {},
+    "_last_provider": None,
     "gnotkg_status": None,
     "workflow_step": "upload",  # upload | preview | extraction | review | invoice
 }

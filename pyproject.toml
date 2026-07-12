@@ -1,18 +1,18 @@
 [project]
-name = "notar-gnotkg-assistent"
+name = "notar-gnotkg-assistent-cloud"
 version = "0.1.0"
-description = "Lokale, DSGVO-konforme Desktop-App zur Erstellung GNotKG-konformer Honorarrechnungen mit lokalem LLM (Ollama)"
+description = "Cloud-only API-Version der GNotKG-Honorarrechnungs-App mit optionalen Online-LLM-Providern"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
     { name = "Gunnar Müller" }
 ]
-keywords = ["notar", "gnotkg", "gebührenrechnung", "honorarrechnung", "ollama", "streamlit"]
+keywords = ["notar", "gnotkg", "gebührenrechnung", "honorarrechnung", "litellm", "streamlit", "cloud-llm"]
 
 dependencies = [
     "streamlit>=1.38,<2.0",
-    "ollama>=0.3",
+    "litellm>=1.65.0",
     "pydantic>=2.8",
     "pydantic-settings>=2.4",
     "pymupdf>=1.24",

@@ -20,6 +20,13 @@ def _clear_prompt_cache():
     llm_extractor._PROMPT_CACHE = None
 
 
+@pytest.fixture(autouse=True)
+def _set_mistral_api_key(monkeypatch):
+    """Setzt einen Test-API-Key für Mistral."""
+    monkeypatch.setenv("MISTRAL_API_KEY", "test-api-key")
+    yield
+
+
 def _make_chat_response(positions, document_type="Kaufvertrag", overall_confidence=0.9):
     payload = {
         "extracted_positions": positions,
@@ -28,9 +35,9 @@ def _make_chat_response(positions, document_type="Kaufvertrag", overall_confiden
         "overall_confidence": overall_confidence,
         "notes": "",
     }
-    return type(
-        "Response", (), {"message": type("Message", (), {"content": json.dumps(payload)})()}
-    )()
+    message = type("Message", (), {"content": json.dumps(payload)})()
+    choice = type("Choice", (), {"message": message})()
+    return type("Response", (), {"choices": [choice]})()
 
 
 class TestExtractFromText:
@@ -39,19 +46,22 @@ class TestExtractFromText:
         mocker.patch("core.llm_extractor._load_prompt", return_value="Test system prompt")
 
     def test_successful_extraction(self, mocker: MockerFixture):
-        mock_client_cls = mocker.patch("core.llm_extractor.ollama.Client")
-        mock_client = mock_client_cls.return_value
-        mock_client.chat.return_value = _make_chat_response(
-            [
-                {
-                    "kv_number": "21200",
-                    "description": "Beurkundung",
-                    "business_value_eur": 450000.0,
-                    "source_reference": "Seite 2",
-                    "confidence": 0.95,
-                    "reasoning": "Hauptkaufvertrag",
-                }
-            ]
+        mock_call = mocker.patch(
+            "core.llm_extractor.call_llm",
+            return_value=_make_chat_response(
+                [
+                    {
+                        "kv_number": "21200",
+                        "description": "Beurkundung",
+                        "business_value_eur": 450000.0,
+                        "source_reference": "Seite 2",
+                        "confidence": 0.95,
+                        "reasoning": "Hauptkaufvertrag",
+                    }
+                ]
+            )
+            .choices[0]
+            .message.content,
         )
 
         result = extract_from_text("Urkundentext", model="test-model", temperature=0.1)
@@ -63,23 +73,29 @@ class TestExtractFromText:
         assert pos.kv_number == "21200"
         assert pos.business_value_eur == 450000.0
         assert pos.confidence == 0.95
-        mock_client_cls.assert_called_once()
-        mock_client.chat.assert_called_once()
+        mock_call.assert_called_once()
+        call_kwargs = mock_call.call_args.kwargs
+        assert call_kwargs["provider"] == "mistral"
+        assert call_kwargs["model"] == "test-model"
+        assert call_kwargs["api_key"] == "test-api-key"
 
     def test_low_confidence_is_filtered(self, mocker: MockerFixture):
-        mock_client_cls = mocker.patch("core.llm_extractor.ollama.Client")
-        mock_client = mock_client_cls.return_value
-        mock_client.chat.return_value = _make_chat_response(
-            [
-                {
-                    "kv_number": "21200",
-                    "description": "Beurkundung",
-                    "business_value_eur": 100000.0,
-                    "source_reference": "Seite 1",
-                    "confidence": 0.1,
-                    "reasoning": "Unsicher",
-                }
-            ]
+        mocker.patch(
+            "core.llm_extractor.call_llm",
+            return_value=_make_chat_response(
+                [
+                    {
+                        "kv_number": "21200",
+                        "description": "Beurkundung",
+                        "business_value_eur": 100000.0,
+                        "source_reference": "Seite 1",
+                        "confidence": 0.1,
+                        "reasoning": "Unsicher",
+                    }
+                ]
+            )
+            .choices[0]
+            .message.content,
         )
 
         result = extract_from_text("Urkundentext")
@@ -87,19 +103,22 @@ class TestExtractFromText:
         assert len(result.extracted_positions) == 0
 
     def test_unknown_kv_number_accepted(self, mocker: MockerFixture):
-        mock_client_cls = mocker.patch("core.llm_extractor.ollama.Client")
-        mock_client = mock_client_cls.return_value
-        mock_client.chat.return_value = _make_chat_response(
-            [
-                {
-                    "kv_number": "99999",
-                    "description": "Sonderleistung",
-                    "business_value_eur": 1000.0,
-                    "source_reference": "Seite 1",
-                    "confidence": 0.8,
-                    "reasoning": "Manuell prüfen",
-                }
-            ]
+        mocker.patch(
+            "core.llm_extractor.call_llm",
+            return_value=_make_chat_response(
+                [
+                    {
+                        "kv_number": "99999",
+                        "description": "Sonderleistung",
+                        "business_value_eur": 1000.0,
+                        "source_reference": "Seite 1",
+                        "confidence": 0.8,
+                        "reasoning": "Manuell prüfen",
+                    }
+                ]
+            )
+            .choices[0]
+            .message.content,
         )
 
         result = extract_from_text("Urkundentext")
@@ -108,19 +127,22 @@ class TestExtractFromText:
         assert result.extracted_positions[0].kv_number == "99999"
 
     def test_invalid_position_skipped(self, mocker: MockerFixture):
-        mock_client_cls = mocker.patch("core.llm_extractor.ollama.Client")
-        mock_client = mock_client_cls.return_value
-        mock_client.chat.return_value = _make_chat_response(
-            [
-                {
-                    "kv_number": "21200",
-                    "description": "Beurkundung",
-                    "business_value_eur": 1000.0,
-                    "source_reference": "Seite 1",
-                    "confidence": "kein-float",
-                    "reasoning": "",
-                }
-            ]
+        mocker.patch(
+            "core.llm_extractor.call_llm",
+            return_value=_make_chat_response(
+                [
+                    {
+                        "kv_number": "21200",
+                        "description": "Beurkundung",
+                        "business_value_eur": 1000.0,
+                        "source_reference": "Seite 1",
+                        "confidence": "kein-float",
+                        "reasoning": "",
+                    }
+                ]
+            )
+            .choices[0]
+            .message.content,
         )
 
         result = extract_from_text("Urkundentext")
@@ -128,23 +150,30 @@ class TestExtractFromText:
         assert len(result.extracted_positions) == 0
 
     def test_json_decode_error_retries_and_fails(self, mocker: MockerFixture):
-        mock_client_cls = mocker.patch("core.llm_extractor.ollama.Client")
-        mock_client = mock_client_cls.return_value
-        mock_client.chat.return_value = type(
-            "Response", (), {"message": type("Message", (), {"content": "Kein JSON"})()}
-        )()
+        mock_call = mocker.patch("core.llm_extractor.call_llm", return_value="Kein JSON")
 
         with pytest.raises(RuntimeError, match="kein gültiges Ergebnis"):
             extract_from_text("Urkundentext", max_retries=1)
 
-        assert mock_client.chat.call_count == 2
+        assert mock_call.call_count == 2
 
-    def test_ollama_connection_refused(self, mocker: MockerFixture):
-        mock_client_cls = mocker.patch("core.llm_extractor.ollama.Client")
-        mock_client = mock_client_cls.return_value
-        mock_client.chat.side_effect = Exception("Connection refused")
+    def test_missing_api_key(self, monkeypatch):
+        monkeypatch.delenv("MISTRAL_API_KEY", raising=False)
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        monkeypatch.delenv("XAI_API_KEY", raising=False)
+        monkeypatch.delenv("MOONSHOT_API_KEY", raising=False)
+        monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
 
-        with pytest.raises(RuntimeError, match="Ollama ist nicht erreichbar"):
+        with pytest.raises(RuntimeError, match="Kein API-Key"):
+            extract_from_text("Urkundentext")
+
+    def test_provider_auth_error(self, mocker: MockerFixture):
+        mocker.patch(
+            "core.llm_extractor.call_llm",
+            side_effect=RuntimeError("Authentifizierung fehlgeschlagen"),
+        )
+
+        with pytest.raises(RuntimeError, match="Authentifizierung"):
             extract_from_text("Urkundentext")
 
 

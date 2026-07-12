@@ -3,14 +3,21 @@
 import json
 from pathlib import Path
 
-import ollama
-
 from core.config import get_settings
 from core.profile_crypto import (
     ProfileCryptoError,
     decrypt_profile,
     encrypt_profile,
     is_encrypted_profile,
+)
+from core.provider_key_store import (
+    ProviderKeyStoreError,
+)
+from core.provider_key_store import (
+    load_provider_keys as _load_provider_keys,
+)
+from core.provider_key_store import (
+    save_provider_keys as _save_provider_keys,
 )
 
 settings = get_settings()
@@ -64,11 +71,38 @@ def save_notary_profile(profile: dict, password: str | None = None) -> dict[str,
     return data
 
 
-def list_ollama_models() -> list[str]:
-    """Listet verfügbare Ollama-Modelle auf."""
+def load_provider_keys(password: str | None = None) -> tuple[dict[str, str] | None, str | None]:
+    """Lädt die gespeicherten API-Keys für Cloud-LLM-Provider.
+
+    Args:
+        password: Master-Passwort, falls die Keys verschlüsselt sind.
+
+    Returns:
+        Tuple (keys, fehler). Bei Erfolg ist fehler None.
+    """
+    path = settings.provider_keys_path
+    if not path.exists():
+        return {}, None
+
     try:
-        client = ollama.Client(host=settings.ollama_url)
-        models = client.list()
-        return [str(m.model) for m in models]  # type: ignore[attr-defined]
-    except Exception:
-        return [settings.ollama_default_model]
+        return _load_provider_keys(password), None
+    except ProviderKeyStoreError as e:
+        return None, str(e)
+
+
+def save_provider_keys(keys: dict[str, str], password: str | None = None) -> None:
+    """Speichert die API-Keys für Cloud-LLM-Provider lokal.
+
+    Args:
+        keys: Dictionary mit Provider-Namen und API-Keys.
+        password: Optional: Master-Passwort für Verschlüsselung.
+    """
+    _save_provider_keys(keys, password)
+
+
+def get_provider_key(provider: str, password: str | None = None) -> str | None:
+    """Gibt den API-Key für einen bestimmten Provider zurück."""
+    keys, _ = load_provider_keys(password)
+    if keys is None:
+        return None
+    return keys.get(provider)

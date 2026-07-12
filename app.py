@@ -10,7 +10,7 @@ from ui.state import init_session_state
 from ui.upload import render_upload_tab
 
 st.set_page_config(
-    page_title="Notar GNotKG Assistent",
+    page_title="Notar GNotKG Assistent – Cloud",
     page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -26,8 +26,12 @@ render_sidebar()
 # ---------------------------------------------------------------------------
 # Hauptbereich
 # ---------------------------------------------------------------------------
-st.title("⚖️ Notar GNotKG Assistent")
-st.caption("GNotKG-konforme Honorarrechnung aus Ihrer Urkunde – mit lokalem KI-Assistent")
+st.title("⚖️ Notar GNotKG Assistent – Cloud")
+st.caption("GNotKG-konforme Honorarrechnung aus Ihrer Urkunde – mit Cloud-LLM-Providern (API-Only)")
+st.error(
+    "⚠️ Diese Version verwendet ausschließlich externe Cloud-LLM-Provider. "
+    "Jeder Nutzer benötigt seinen eigenen API-Key und trägt die Datenschutz-Verantwortung selbst."
+)
 
 # Workflow-Steps als Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["📤 Upload", "🔍 Extraktion", "✏️ Prüfung", "📄 Rechnung"])

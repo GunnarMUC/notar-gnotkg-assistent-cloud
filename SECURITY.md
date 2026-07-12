@@ -1,4 +1,4 @@
-# Security Policy
+# Security Policy – Notar GNotKG Assistent Cloud
 
 ## Supported Versions
 
@@ -8,7 +8,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in **Notar GNotKG Assistent**, please report it responsibly.
+If you discover a security vulnerability in **Notar GNotKG Assistent Cloud**, please report it responsibly.
 
 1. **Do not open a public issue.**
 2. Send an e-mail to the maintainer with a detailed description and, if possible, steps to reproduce.
@@ -16,10 +16,11 @@ If you discover a security vulnerability in **Notar GNotKG Assistent**, please r
 
 ## Security Design
 
-- **Local-only processing**: No document data or secrets are uploaded to the cloud.
+- **Cloud-LLM processing**: Document contents are sent to the external LLM provider chosen by the user. The user is responsible for selecting a provider and API key.
 - **Deterministic fee calculation**: All GNotKG-relevant amounts are computed by audited Python code, not by the LLM.
 - **Human-in-the-loop**: Every LLM suggestion must be reviewed and confirmed by the notary.
-- **Sensitive data**: The notary profile is stored in `data/notary_profile.json`. We recommend encrypting the profile with a master password in production deployments.
+- **API-Key storage**: API keys are stored encrypted locally in `data/provider_keys.json` using the same master password as the notary profile. Keys are never hardcoded, logged, or committed to Git.
+- **Sensitive data**: The notary profile is stored in `data/notary_profile.json`. We recommend encrypting the profile with a master password.
 
 ## Security Tools
 
@@ -34,3 +35,4 @@ This repository runs the following security checks in CI:
 
 - LLM outputs can hallucinate. Always verify extracted positions before generating an invoice.
 - The application is intended for local, single-user deployments on trusted hardware.
+- Urkundeninhalte verlassen das Gerät und werden vom gewählten Cloud-Provider verarbeitet. Die datenschutzkonforme Nutzung liegt in der Verantwortung des Nutzers.

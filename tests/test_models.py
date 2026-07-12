@@ -12,13 +12,13 @@ from core.models import (
 class TestSettings:
     def test_defaults(self):
         s = get_settings()
-        assert s.ollama_host == "localhost"
-        assert s.ollama_port == 11434
+        assert s.llm_provider == "mistral"
+        assert s.llm_temperature == 0.1
         assert s.app_default_output_format == "docx"
 
-    def test_ollama_url(self):
+    def test_provider_keys_path(self):
         s = get_settings()
-        assert s.ollama_url == "http://localhost:11434"
+        assert s.provider_keys_path.name == "provider_keys.json"
 
 
 class TestModels:
