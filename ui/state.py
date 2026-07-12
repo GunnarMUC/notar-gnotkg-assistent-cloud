@@ -30,3 +30,15 @@ def init_session_state() -> None:
     for key, val in DEFAULTS.items():
         if key not in st.session_state:
             st.session_state[key] = val
+
+
+def reset_document_state() -> None:
+    """Setzt alle dokumentbezogenen State-Keys zurück für eine neue Urkunde."""
+    st.session_state.parsed_document = None
+    st.session_state.extraction_result = None
+    st.session_state.final_positions = []
+    st.session_state.generated_invoice = None
+    st.session_state.generated_audit = None
+    st.session_state.workflow_step = "upload"
+    if "position_editor" in st.session_state:
+        del st.session_state["position_editor"]

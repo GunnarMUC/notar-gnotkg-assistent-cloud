@@ -15,6 +15,7 @@ from ui.helpers import (
     save_notary_profile,
     save_provider_keys,
 )
+from ui.state import reset_document_state
 
 settings = get_settings()
 
@@ -48,6 +49,8 @@ def render_sidebar() -> None:
         _render_provider_section()
         st.divider()
         _render_gnotkg_status_section()
+        st.divider()
+        _render_reset_section()
         st.divider()
         st.caption("Notar GNotKG Assistent Cloud v0.1.0")
         st.caption("API-Keys werden lokal verschlüsselt gespeichert.")
@@ -225,3 +228,14 @@ def _render_gnotkg_status_section() -> None:
             st.warning(f"⚠️ GNotKG veraltet – Aktueller Stand: {status.remote_version}")
         else:
             st.info("ℹ️ Noch nicht geprüft")
+
+
+def _render_reset_section() -> None:
+    with st.expander("🗑️ Zurücksetzen", expanded=False):
+        st.warning(
+            "Beim Zurücksetzen werden alle Urkundendaten, Extraktionsergebnisse "
+            "und Rechnungen gelöscht. Notar-Profil und API-Keys bleiben erhalten."
+        )
+        if st.button("🗑️ Neue Urkunde starten", type="secondary", use_container_width=True):
+            reset_document_state()
+            st.rerun()

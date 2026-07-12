@@ -8,6 +8,7 @@ from loguru import logger
 
 from core.config import get_settings
 from core.document_parser import parse_document
+from ui.state import reset_document_state
 
 settings = get_settings()
 
@@ -78,3 +79,8 @@ def _render_document_preview() -> None:
         else:
             st.session_state.workflow_step = "extraction"
             st.rerun()
+
+    col_reset, _ = st.columns([1, 3])
+    if col_reset.button("🗑️ Urkunde verwerfen", type="secondary"):
+        reset_document_state()
+        st.rerun()
