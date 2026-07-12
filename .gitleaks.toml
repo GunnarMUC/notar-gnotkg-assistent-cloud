@@ -1,0 +1,8 @@
+# Gitleaks configuration for Notar GNotKG Assistent
+# Allowlist: Beispielurkunden (fake data) and Gesetze (public law text)
+
+[allowlist]
+paths = [
+  '''Beispielurkunden/''',
+  '''Gesetze/''',
+]
