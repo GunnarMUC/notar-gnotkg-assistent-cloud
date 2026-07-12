@@ -1,7 +1,6 @@
 """UI-Hilfsfunktionen für die Streamlit-App."""
 
 import json
-from pathlib import Path
 
 from core.config import get_settings
 from core.profile_crypto import (
@@ -32,7 +31,7 @@ def load_notary_profile(password: str | None = None) -> tuple[dict | None, str |
     Returns:
         Tuple (profil, fehler). Bei Erfolg ist fehler None.
     """
-    path = Path(settings.app_data_dir) / "notary_profile.json"
+    path = settings.data_dir_path / "notary_profile.json"
     if not path.exists():
         return None, None
 
@@ -40,6 +39,8 @@ def load_notary_profile(password: str | None = None) -> tuple[dict | None, str |
         raw = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as e:
         return None, f"Profil-Datei ist kein gültiges JSON: {e}"
+    except OSError as e:
+        return None, f"Profil-Datei konnte nicht gelesen werden: {e}"
 
     if is_encrypted_profile(raw):
         if password is None:
@@ -62,12 +63,15 @@ def save_notary_profile(profile: dict, password: str | None = None) -> dict[str,
     Returns:
         Dictionary mit dem gespeicherten Dateiinhalt.
     """
-    path = Path(settings.app_data_dir) / "notary_profile.json"
+    path = settings.data_dir_path / "notary_profile.json"
     path.parent.mkdir(parents=True, exist_ok=True)
 
     data = encrypt_profile(profile, password) if password else {**profile, "encrypted": "false"}
 
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    try:
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    except OSError as e:
+        raise OSError(f"Profil konnte nicht gespeichert werden: {e}") from e
     return data
 
 

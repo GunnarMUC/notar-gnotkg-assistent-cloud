@@ -87,4 +87,4 @@ def decrypt_profile(encrypted_profile: dict[str, Any], password: str) -> dict[st
 
 def is_encrypted_profile(profile: dict[str, Any]) -> bool:
     """Prüft, ob ein Profil als verschlüsselte Datei vorliegt."""
-    return profile.get("encrypted") == "true" and "ciphertext" in profile
+    return profile.get("encrypted") == "true" and "salt" in profile and "ciphertext" in profile

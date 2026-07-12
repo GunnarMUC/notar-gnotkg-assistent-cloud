@@ -20,15 +20,19 @@ settings = get_settings()
 
 # Curated Modelle pro Provider – können vom Nutzer überschrieben werden.
 _CURATED_MODELS: dict[str, list[str]] = {
-    Provider.MISTRAL: ["mistral-large-latest", "mistral-medium-latest", "mistral-small-latest"],
-    Provider.ANTHROPIC: [
-        "claude-3-5-sonnet-20241022",
-        "claude-3-opus-20240229",
-        "claude-3-haiku-20240307",
+    Provider.MISTRAL: [
+        "mistral-medium-latest",
+        "mistral-large-3",
+        "mistral-small-latest",
     ],
-    Provider.XAI: ["grok-3", "grok-2-1212"],
-    Provider.MOONSHOT: ["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"],
-    Provider.DEEPSEEK: ["deepseek-chat", "deepseek-reasoner"],
+    Provider.ANTHROPIC: [
+        "claude-sonnet-5",
+        "claude-opus-4-8",
+        "claude-haiku-4-5",
+    ],
+    Provider.XAI: ["grok-4.5", "grok-4.3", "grok-4-1-fast-reasoning"],
+    Provider.MOONSHOT: ["kimi-k2.6", "kimi-k2.5", "moonshot-v1-128k"],
+    Provider.DEEPSEEK: ["deepseek-v4-pro", "deepseek-v4-flash", "deepseek-reasoner"],
 }
 
 
@@ -68,14 +72,20 @@ def _render_profile_section() -> None:
                 key="profile_load_password",
                 help="Leer lassen, wenn das Profil unverschlüsselt ist.",
             )
-            if st.button("🔓 Profil laden"):
+            col1, col2 = st.columns(2)
+            if col1.button("🔓 Profil laden"):
                 profile, error = load_notary_profile(password or None)
                 if error:
                     st.error(error)
-                else:
+                elif profile:
                     st.session_state.notary_profile = profile
-                    st.success("Profil geladen" if profile else "Kein Profil vorhanden")
+                    st.success("Profil geladen")
                     st.rerun()
+                else:
+                    st.info("Kein Profil vorhanden – bitte neues Profil anlegen.")
+            if col2.button("➕ Neues Profil anlegen"):
+                st.session_state.notary_profile = {}
+                st.rerun()
             return
 
         profile = st.session_state.notary_profile or {}
