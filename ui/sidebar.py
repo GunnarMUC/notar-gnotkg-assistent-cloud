@@ -23,7 +23,7 @@ settings = get_settings()
 _CURATED_MODELS: dict[str, list[str]] = {
     Provider.MISTRAL: [
         "mistral-medium-latest",
-        "mistral-large-3",
+        "mistral-large-latest",
         "mistral-small-latest",
     ],
     Provider.ANTHROPIC: [

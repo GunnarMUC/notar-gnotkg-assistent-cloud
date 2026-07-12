@@ -9,9 +9,9 @@ Die Empfehlungen sind nach aktuellem Stand (Juli 2026) gewählt und orientieren 
 ### Mistral (Default)
 
 - `mistral-medium-latest` – **Empfohlen** (Mistral Medium 3.5, frontier multimodal, sehr gute Agent-/Coding-Leistung)
-- `mistral-large-3` – State-of-the-art Open-Weight-Allzweckmodell (v25.12)
-- `magistral-medium-2506` – Reasoning-Modell mit Funktionsaufrufen, gut für komplexe Extraktionen
-- Alternativ für schnelle/kostengünstige Fälle: `mistral-small-latest`
+- `mistral-large-latest` – Mistral Large 3, leistungsstarkes Open-Weight-Allzweckmodell
+- `mistral-small-latest` – Schnell und kostengünstig (Mistral Small 4)
+- Alternativ für Reasoning: `magistral-medium-2506`
 
 ### Anthropic
 
