@@ -16,6 +16,7 @@ DEFAULTS: dict[str, Any] = {
     "final_positions": [],
     "generated_invoice": None,
     "generated_audit": None,
+    "auslagen": {"dokumentenpauschale": 0.0, "post_telekom": 0.0, "sonstige": 0.0},
     "llm_provider": settings.llm_provider,
     "llm_model": settings.llm_model or get_default_model(settings.llm_provider),
     "provider_keys": {},
@@ -39,6 +40,7 @@ def reset_document_state() -> None:
     st.session_state.final_positions = []
     st.session_state.generated_invoice = None
     st.session_state.generated_audit = None
+    st.session_state.auslagen = {"dokumentenpauschale": 0.0, "post_telekom": 0.0, "sonstige": 0.0}
     st.session_state.workflow_step = "upload"
     if "position_editor" in st.session_state:
         del st.session_state["position_editor"]

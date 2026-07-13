@@ -15,9 +15,11 @@ def _clear_prompt_cache():
     """Prompt-Cache vor jedem Test leeren."""
     import core.llm_extractor as llm_extractor
 
-    llm_extractor._PROMPT_CACHE = None
+    llm_extractor._BASE_PROMPT_CACHE = None
+    llm_extractor._GNOTKG_CATALOG_CACHE = None
     yield
-    llm_extractor._PROMPT_CACHE = None
+    llm_extractor._BASE_PROMPT_CACHE = None
+    llm_extractor._GNOTKG_CATALOG_CACHE = None
 
 
 @pytest.fixture(autouse=True)

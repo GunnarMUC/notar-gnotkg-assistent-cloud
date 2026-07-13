@@ -5,6 +5,7 @@ import streamlit as st
 
 from core.config import get_settings
 from core.fee_engine import FeeEngine
+from core.position_suggester import suggest_missing_positions
 
 settings = get_settings()
 
@@ -20,6 +21,7 @@ def render_review_tab() -> None:
     df = _build_positions_dataframe()
     edited_df = _render_position_editor(df)
 
+    _render_suggestions()
     _render_summary(edited_df)
     _render_auslagen()
 
@@ -78,6 +80,45 @@ def _render_position_editor(df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def _render_suggestions() -> None:
+    """Zeigt vom System vorgeschlagene fehlende Positionen an."""
+    from core.models import ExtractedPosition
+
+    suggestions = suggest_missing_positions(
+        [ExtractedPosition(**p) for p in st.session_state.final_positions],
+        st.session_state.extraction_result.document_type
+        if st.session_state.extraction_result
+        else "",
+    )
+
+    if not suggestions:
+        return
+
+    with st.expander("💡 Vorgeschlagene GNotKG-Positionen", expanded=True):
+        st.info(
+            "Basierend auf dem erkannten Dokumententyp könnten folgende Positionen "
+            "zusätzlich relevant sein. Bitte Geschäftswert und Geltung prüfen."
+        )
+        for suggestion in suggestions:
+            col1, col2, col3 = st.columns([1, 3, 1])
+            col1.write(f"**{suggestion['kv_number']}**")
+            col2.write(f"{suggestion['description']}  \n*{suggestion['reasoning']}*")
+            if col3.button("➕ Übernehmen", key=f"suggest_{suggestion['kv_number']}"):
+                st.session_state.final_positions.append(
+                    {
+                        "kv_number": suggestion["kv_number"],
+                        "description": suggestion["description"],
+                        "business_value_eur": suggestion["business_value_eur"],
+                        "source_reference": suggestion["source_reference"],
+                        "confidence": suggestion["confidence"],
+                        "reasoning": suggestion["reasoning"],
+                        "was_overridden": False,
+                        "fee_amount": 0.0,
+                    }
+                )
+                st.rerun()
+
+
 def _render_summary(df: pd.DataFrame) -> None:
     total_net = df["fee_amount"].sum()
     vat = total_net * settings.app_vat_rate
@@ -96,8 +137,10 @@ def _render_auslagen() -> None:
         col_a1, col_a2 = st.columns(2)
         dokumentenpauschale = col_a1.number_input("Dokumentenpauschale (€)", value=0.0, step=0.50)
         post_telekom = col_a2.number_input("Post/Telekom (€)", value=0.0, step=0.50)
-        st.number_input("Sonstige Auslagen (€)", value=0.0, step=1.0)
+        sonstige = st.number_input("Sonstige Auslagen (€)", value=0.0, step=1.0)
 
-    # Auslagen werden aktuell noch nicht in die Rechnung übernommen; TODO
-    _ = dokumentenpauschale
-    _ = post_telekom
+        st.session_state.auslagen = {
+            "dokumentenpauschale": dokumentenpauschale,
+            "post_telekom": post_telekom,
+            "sonstige": sonstige,
+        }

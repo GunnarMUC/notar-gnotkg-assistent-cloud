@@ -1,0 +1,740 @@
+{
+  "21100": {
+    "kv_number": "21100",
+    "title": "Beurkundungsverfahren",
+    "description": ". 2,0 – mindestens 120,00 €",
+    "category": "Beurkundung",
+    "multiplier": "2,0",
+    "min_fee": "120,00",
+    "flat_fee": null
+  },
+  "21101": {
+    "kv_number": "21101",
+    "title": "Gegenstand des Beurkundungsverfahrens ist 1. die Annahme eines Antrags auf Abschluss eines Vertrags oder 2. ein Verfügungsgeschäft und derselbe Notar hat für eine Beurkundung, die das zugrunde liegende Rechtsgeschäft betrifft, die Gebühr 21100 oder 23603 erhoben: Die Gebühr 21100 beträgt",
+    "description": ". (1) Als zugrunde liegendes Rechtsgeschäft gilt nicht eine Verfügung von Todes wegen. (2) Die Gebühr für die Beurkundung des Zuschlags in einer freiwilligen Versteigerung von Grundstücken oder grundstücksgleichen Rechten bestimmt sich nach Nummer 23603. 0,5 – mindestens 30,00 €",
+    "category": "Beurkundung",
+    "multiplier": "0,5",
+    "min_fee": "30,00",
+    "flat_fee": null
+  },
+  "21102": {
+    "kv_number": "21102",
+    "title": "Gegenstand des Beurkundungsverfahrens ist 1. ein Verfügungsgeschäft und das zugrunde liegende Rechtsgeschäft ist bereits beurkundet und Nummer 21101 nicht anzuwenden oder 2. die Aufhebung eines Vertrags: Die Gebühr 21100 beträgt",
+    "description": ". 1,0 – mindestens 60,00 €",
+    "category": "Beurkundung",
+    "multiplier": "1,0",
+    "min_fee": "60,00",
+    "flat_fee": null
+  },
+  "21200": {
+    "kv_number": "21200",
+    "title": "Beurkundungsverfahren",
+    "description": ". Unerheblich ist, ob eine Erklärung von einer oder von mehreren Personen abgegeben wird.1,0 – mindestens 60,00 €",
+    "category": "Beurkundung",
+    "multiplier": "1,0",
+    "min_fee": "60,00",
+    "flat_fee": null
+  },
+  "21201": {
+    "kv_number": "21201",
+    "title": "Beurkundungsgegenstand ist 1. der Widerruf einer letztwilligen Verfügung, 2. der Rücktritt von einem Erbvertrag, 3. die Anfechtung einer Verfügung von Todes wegen, 4. ein Antrag oder eine Bewilligung nach der Grundbuchordnung, der Schiffsregisterordnung oder dem Gesetz über Rechte an Luftfahrzeugen oder die Zustimmung des Eigentümers zur Löschung eines Grundpfandrechts oder eines vergleichbaren Pfandrechts, 5. eine Anmeldung zum Handelsregister oder zu einem ähnlichen Register, 6. ein Antrag an das Nachlassgericht, 7. eine Erklärung, die gegenüber dem Nachlassgericht abzugeben ist, oder 8. die Zustimmung zur Annahme als Kind: Die Gebühr 21200 beträgt",
+    "description": ". In dem in",
+    "category": "Beurkundung",
+    "multiplier": "0,5",
+    "min_fee": "30,00",
+    "flat_fee": null
+  },
+  "21300": {
+    "kv_number": "21300",
+    "title": "Vorzeitige Beendigung des Beurkundungsverfahrens 1. vor Ablauf des Tages, an dem ein vom Notar gefertigter Entwurf an einen Beteiligten durch Aufgabe zur Post versandt worden ist, 2. vor der Übermittlung eines vom Notar gefertigten Entwurfs per Telefax, vor der elektronischen Übermittlung als Datei oder vor Aushändigung oder 3. bevor der Notar mit allen Beteiligten in einem zum Zweck der Beurkundung vereinbarten Termin auf der Grundlage eines von ihm gefertigten Entwurfs verhandelt hat: Die jeweilige Gebühr für das Beurkundungsverfahren ermäßigt sich auf",
+    "description": ". 20,00 €",
+    "category": "Beurkundung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "20,00"
+  },
+  "21301": {
+    "kv_number": "21301",
+    "title": "In den Fällen der Nummer 21300 hat der Notar persönlich oder schriftlich beraten: Die jeweilige Gebühr für das Beurkundungsverfahren ermäßigt sich auf eine Gebühr",
+    "description": ". in Höhe der jeweiligen Beratungsgebühr",
+    "category": "Beurkundung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "21302": {
+    "kv_number": "21302",
+    "title": "Vorzeitige Beendigung des Verfahrens nach einem der in Nummer 21300 genannten Zeitpunkte in den Fällen der Nummer 21100: Die Gebühr 21100 ermäßigt sich auf",
+    "description": ". 0,5 bis 2,0 – mindestens 120,00 €",
+    "category": "Beurkundung",
+    "multiplier": "2,0",
+    "min_fee": "120,00",
+    "flat_fee": null
+  },
+  "21303": {
+    "kv_number": "21303",
+    "title": "Vorzeitige Beendigung des Verfahrens nach einem der in Nummer 21300 genannten Zeitpunkte in den Fällen der Nummern 21102 und 21200: Die Gebühren 21102 und 21200 ermäßigen sich auf",
+    "description": ". 0,3 bis 1,0 – mindestens 60,00 €",
+    "category": "Beurkundung",
+    "multiplier": "1,0",
+    "min_fee": "60,00",
+    "flat_fee": null
+  },
+  "21304": {
+    "kv_number": "21304",
+    "title": "Vorzeitige Beendigung des Verfahrens nach einem der in Nummer 21300 genannten Zeitpunkte in den Fällen der Nummern 21101 und 21201: Die Gebühren 21101 und 21201 ermäßigen sich auf",
+    "description": ". 0,3 bis 0,5 – mindestens 30,00 €",
+    "category": "Beurkundung",
+    "multiplier": "0,5",
+    "min_fee": "30,00",
+    "flat_fee": null
+  },
+  "22110": {
+    "kv_number": "22110",
+    "title": "Vollzugsgebühr",
+    "description": ". 0,5",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "22111": {
+    "kv_number": "22111",
+    "title": "Vollzugsgebühr, wenn die Gebühr für das zugrunde liegende Beurkundungsverfahren weniger als 2,0 beträgt: Die Gebühr 22110 beträgt",
+    "description": ". 0,3Vollzugsgegenstand sind lediglich die in der",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "50,00"
+  },
+  "22114": {
+    "kv_number": "22114",
+    "title": "Erzeugung von strukturierten Daten in Form der Extensible Markup Language (XML) oder in einem nach dem Stand der Technik vergleichbaren Format für eine automatisierte Weiterbearbeitung",
+    "description": ". 0,2 – höchstens 125,00 €",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "125,00"
+  },
+  "22115": {
+    "kv_number": "22115",
+    "title": "Neben der Gebühr 22114 entstehen andere Gebühren dieses Unterabschnitts: Die Gebühr 22114 beträgt",
+    "description": ". 0,1 – höchstens 125,00 €",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "125,00"
+  },
+  "22120": {
+    "kv_number": "22120",
+    "title": "Vollzugsgebühr für die in Vorbemerkung 2.2.1.1 Abs. 1 Satz 2 genannten Tätigkeiten, wenn die Gebühr für ein die Urkunde betreffendes Beurkundungsverfahren 2,0 betragen würde",
+    "description": ". 1,0",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "22121": {
+    "kv_number": "22121",
+    "title": "Vollzugsgebühr für die in Vorbemerkung 2.2.1.1 Abs. 1 Satz 2 genannten Tätigkeiten, wenn die Gebühr für ein die Urkunde betreffendes Beurkundungsverfahren weniger als 2,0 betragen würde",
+    "description": ". 0,522122Überprüfung, ob die Urkunde bei Gericht eingereicht werden kann .......... (1) Die Gebühr entsteht nicht neben einer der Gebühren 22120 und 22121. (2) Die Gebühr entsteht nicht für die Prüfung der Eintragungsfähigkeit in den Fällen des § 378 Abs. 3 FamFG und des § 15 Abs. 3 der Grundbuchordnung.0,5",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "22123": {
+    "kv_number": "22123",
+    "title": "Erledigung von Beanstandungen einschließlich des Beschwerdeverfahrens",
+    "description": ". Die Gebühr entsteht nicht neben einer der Gebühren 22120 bis 22122.0,5",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "22124": {
+    "kv_number": "22124",
+    "title": "Die Tätigkeit beschränkt sich auf 1.die Übermittlung von Anträgen, Erklärungen oder Unterlagen an ein Gericht, eine Behörde oder einen Dritten oder die Stellung von Anträgen im Namen der Beteiligten,2.die Prüfung der Eintragungsfähigkeit in den Fällen des § 378 Abs. 3 FamFG und des § 15 Abs. 3 der Grundbuchordnung (1) Die Gebühr entsteht nur, wenn nicht eine Gebühr nach den Nummern 22120 bis 22123 anfällt. (2) Die Gebühr nach Nummer 2 entsteht nicht neben der Gebühr 25100 oder 25101. (3) Die Gebühr entsteht auch, wenn Tätigkeiten nach Nummer 1 und nach Nummer 2 ausgeübt werden.",
+    "description": "In diesem Fall wird die Gebühr nur einmal erhoben. 20,00 €",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "20,00"
+  },
+  "22125": {
+    "kv_number": "22125",
+    "title": "Erzeugung von strukturierten Daten in Form der Extensible Markup Language (XML) oder einem nach dem Stand der Technik vergleichbaren Format für eine automatisierte Weiterbearbeitung",
+    "description": ". (1) Die Gebühr entsteht neben anderen Gebühren dieses Unterabschnitts gesondert. (2) Die Gebühr entsteht nicht neben der Gebühr 25101. 0,5 – höchstens 250,00 €",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "250,00"
+  },
+  "22200": {
+    "kv_number": "22200",
+    "title": "Betreuungsgebühr",
+    "description": ". Die Betreuungsgebühr entsteht für die 1. Erteilung einer Bescheinigung über den Eintritt der Wirksamkeit von Verträgen, Erklärungen und Beschlüssen, 2. Prüfung und Mitteilung des Vorliegens von Fälligkeitsvoraussetzungen einer Leistung oder Teilleistung,0,53. Beachtung einer Auflage eines an dem Beurkundungsverfahren Beteiligten im Rahmen eines Treuhandauftrags, eine Urkunde oder Auszüge einer Urkunde nur unter bestimmten Bedingungen herauszugeben, wenn die Herausgabe nicht lediglich davon abhängt, dass ein Beteiligter der Herausgabe zustimmt, oder die Erklärung der Bewilligung nach § 19 der Grundbuchordnung aufgrund einer Vollmacht, wenn diese nur unter bestimmten Bedingungen abgegeben werden soll, 4. Prüfung und Beachtung der Auszahlungsvoraussetzungen von verwahrtem Geld und der Ablieferungsvoraussetzungen von verwahrten Wertpapieren und Kostbarkeiten, 5. Anzeige oder Anmeldung einer Tatsache, insbesondere einer Abtretung oder Verpfändung, an einen nicht an dem Beurkundungsverfahren Beteiligten zur Erzielung einer Rechtsfolge, wenn sich die Tätigkeit des Notars nicht darauf beschränkt, dem nicht am Beurkundungsverfahren Beteiligten die Urkunde oder eine Kopie oder eine Ausfertigung der Urkunde zu übermitteln, 6. Erteilung einer Bescheinigung über Veränderungen hinsichtlich der Personen der Gesellschafter oder des Umfangs ihrer Beteiligung (§ 40 Abs. 2 GmbHG), wenn Umstände außerhalb der Urkunde zu prüfen sind, und 7. Entgegennahme der für den Gläubiger bestimmten Grundpfandrechtsbestellungsurkunde zur Herbeiführung der Bindungswirkung gemäß § 873 Abs. 2 BGB.",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "22201": {
+    "kv_number": "22201",
+    "title": "Treuhandgebühr",
+    "description": ". Die Treuhandgebühr entsteht für die Beachtung von Auflagen durch einen nicht unmittelbar an dem Beurkundungsverfahren Beteiligten, eine Urkunde oder Auszüge einer Urkunde nur unter bestimmten Bedingungen herauszugeben. Die Gebühr entsteht für jeden Treuhandauftrag gesondert.0,5",
+    "category": "Vollzug/Betreuung/Treuhand",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23100": {
+    "kv_number": "23100",
+    "title": "Verfahrensgebühr",
+    "description": ". Wenn derselbe Notar demnächst nach der Rückgabe eines Erbvertrags eine erneute Verfügung von Todes wegen desselben Erblassers beurkundet, wird die Gebühr auf die Gebühr für das Beurkundungsverfahren angerechnet. Bei einer Mehrheit von Erblassern erfolgt die Anrechnung nach Kopfteilen.0,3",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23200": {
+    "kv_number": "23200",
+    "title": "Verfahrensgebühr",
+    "description": ". Die Gebühr entsteht auch, wenn der Notar Prüfungstätigkeiten übernimmt.2,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23201": {
+    "kv_number": "23201",
+    "title": "Vorzeitige Beendigung des Verfahrens: Die Gebühr 23200 ermäßigt sich auf",
+    "description": ". 0,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23300": {
+    "kv_number": "23300",
+    "title": "Verfahren zur Abnahme von Eiden und eidesstattlichen Versicherungen",
+    "description": ". 1,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23301": {
+    "kv_number": "23301",
+    "title": "Vorzeitige Beendigung des Verfahrens: Die Gebühr 23300 beträgt",
+    "description": ". 0,3",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23302": {
+    "kv_number": "23302",
+    "title": "Vernehmung von Zeugen und Sachverständigen",
+    "description": ". 1,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23400": {
+    "kv_number": "23400",
+    "title": "Verfahren über die Aufnahme eines Wechsel- und Scheckprotests",
+    "description": ". Die Gebühr fällt auch dann an, wenn ohne Aufnahme des Protestes an den Notar gezahlt oder ihm die Zahlung nachgewiesen wird.0,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23401": {
+    "kv_number": "23401",
+    "title": "Verfahren über die Aufnahme eines jeden Protests wegen Verweigerung der Ehrenannahme oder wegen unterbliebener Ehrenzahlung, wenn der Wechsel Notadressen enthält",
+    "description": ". 0,3",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23500": {
+    "kv_number": "23500",
+    "title": "Verfahren über die Aufnahme eines Vermögensverzeichnisses einschließlich der Siegelung",
+    "description": ". Die Gebühr entsteht nicht, wenn die Aufnahme des Vermögensverzeichnisses Teil eines beurkundeten Vertrags ist. 2,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23501": {
+    "kv_number": "23501",
+    "title": "Vorzeitige Beendigung des Verfahrens: Die Gebühr 23500 ermäßigt sich auf",
+    "description": ". 0,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23502": {
+    "kv_number": "23502",
+    "title": "Mitwirkung als Urkundsperson bei der Aufnahme eines Vermögensverzeichnisses einschließlich der Siegelung",
+    "description": ". 1,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23503": {
+    "kv_number": "23503",
+    "title": "Siegelung, die nicht mit den Gebühren 23500 oder 23502 abgegolten ist, und Entsiegelung",
+    "description": ". 0,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23600": {
+    "kv_number": "23600",
+    "title": "Verfahrensgebühr",
+    "description": ". 0,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23601": {
+    "kv_number": "23601",
+    "title": "Aufnahme einer Schätzung",
+    "description": ". 0,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23602": {
+    "kv_number": "23602",
+    "title": "Abhaltung eines Versteigerungstermins: für jeden Termin",
+    "description": ". Der Versteigerungstermin gilt als abgehalten, wenn zur Abgabe von Geboten aufgefordert ist. 1,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23603": {
+    "kv_number": "23603",
+    "title": "Beurkundung des Zuschlags",
+    "description": ". Die Beurkundung bleibt gebührenfrei, wenn sie in der Niederschrift über die Versteigerung erfolgt und wenn 1. der Meistbietende die Rechte aus dem Meistgebot oder der Veräußerer den Anspruch gegen den Ersteher abtritt oder 2. der Meistbietende erklärt, für einen Dritten geboten zu haben, oder 3. ein Dritter den Erklärungen nach Nummer 2 beitritt. Das Gleiche gilt, wenn nach Maßgabe der Versteigerungsbedingungen für den Anspruch gegen den Ersteher die Bürgschaft übernommen oder eine sonstige Sicherheit bestellt und dies in dem Protokoll über die Versteigerung beurkundet wird.1,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23700": {
+    "kv_number": "23700",
+    "title": "Verfahrensgebühr",
+    "description": ". (1) Die Gebühr entsteht für die Versteigerung von beweglichen Sachen, von Früchten auf dem Halm oder von Holz auf dem Stamm sowie von Forderungen oder sonstigen Rechten. (2) Ein Betrag in Höhe der Kosten kann aus dem Erlös vorweg entnommen werden.3,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23701": {
+    "kv_number": "23701",
+    "title": "Beendigung des Verfahrens vor Aufforderung zur Abgabe von Geboten: Die Gebühr 23700 ermäßigt sich auf",
+    "description": ". 0,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23800": {
+    "kv_number": "23800",
+    "title": "Verfahren über die Vollstreckbarerklärung eines Anwaltsvergleichs nach § 796a ZPO",
+    "description": ". 72,00 €",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "72,00"
+  },
+  "23801": {
+    "kv_number": "23801",
+    "title": "Verfahren über die Vollstreckbarerklärung eines Schiedsspruchs mit vereinbartem Wortlaut (§ 1053 ZPO)",
+    "description": ". 2,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23802": {
+    "kv_number": "23802",
+    "title": "Beendigung des gesamten Verfahrens durch Zurücknahme des Antrags: Die Gebühr 23801 ermäßigt sich auf",
+    "description": ". 1,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23803": {
+    "kv_number": "23803",
+    "title": "Verfahren über die Erteilung einer vollstreckbaren Ausfertigung, wenn der Eintritt einer Tatsache oder einer Rechtsnachfolge zu prüfen ist (§ 726 Abs. 1, § 727, auch i. V. m. den §§ 728, 729, 738, 742, 744, 744a, 745 Abs. 2 oder § 749 ZPO)",
+    "description": ". 0,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23804": {
+    "kv_number": "23804",
+    "title": "Verfahren über den Antrag auf Erteilung einer weiteren vollstreckbaren Ausfertigung (§ 797 Abs. 2, § 733 ZPO)",
+    "description": ". Die Gebühr wird für jede weitere vollstreckbare Ausfertigung gesondert erhoben. 24,00 €",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "24,00"
+  },
+  "23805": {
+    "kv_number": "23805",
+    "title": "Verfahren über die Ausstellung einer Bestätigung nach § 1079 ZPO oder über die Ausstellung einer Bescheinigung nach § 1110 ZPO",
+    "description": ". 24,00 €",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "24,00"
+  },
+  "23806": {
+    "kv_number": "23806",
+    "title": "Verfahren über einen Antrag auf Vollstreckbarerklärung einer notariellen Urkunde nach § 55 Abs. 3 AVAG, nach § 35 Abs. 3 AUG, nach § 3 Abs. 4 IntErbRVG oder nach § 4 Abs. 4 IntGüRVG",
+    "description": ". 288,00 €",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "288,00"
+  },
+  "23807": {
+    "kv_number": "23807",
+    "title": "Beendigung des gesamten Verfahrens durch Zurücknahme des Antrags: Die Gebühr 23806 ermäßigt sich auf",
+    "description": ". 108,00 €",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "108,00"
+  },
+  "23808": {
+    "kv_number": "23808",
+    "title": "Verfahren über die Ausstellung einer Bescheinigung nach § 57 AVAG, § 27 IntErbRVG oder § 27 IntGüRVG oder für die Ausstellung des Formblatts oder der Bescheinigung nach § 71 Abs. 1 AUG",
+    "description": ". 19,00 €",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "19,00"
+  },
+  "23900": {
+    "kv_number": "23900",
+    "title": "Verfahrensgebühr",
+    "description": ".6,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23901": {
+    "kv_number": "23901",
+    "title": "Soweit das Verfahren vor Eintritt in die Verhandlung durch Zurücknahme oder auf andere Weise endet, ermäßigt sich die Gebühr 23900 auf",
+    "description": ".1,5",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "23902": {
+    "kv_number": "23902",
+    "title": "Soweit der Notar das Verfahren vor Eintritt in die Verhandlung wegen Unzuständigkeit an einen anderen Notar verweist, ermäßigt sich die Gebühr 23900 auf",
+    "description": ".1,5 – höchstens 100,00 €",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "100,00"
+  },
+  "23903": {
+    "kv_number": "23903",
+    "title": "Das Verfahren wird nach Eintritt in die Verhandlung 1. ohne Bestätigung der Auseinandersetzung abgeschlossen oder 2. wegen einer Vereinbarung der Beteiligten über die Zuständigkeit an einen anderen Notar verwiesen: Die Gebühr 23900 ermäßigt sich auf",
+    "description": ".3,0",
+    "category": "Grundschuld/Löschung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "24100": {
+    "kv_number": "24100",
+    "title": "Fertigung eines Entwurfs, wenn die Gebühr für das Beurkundungsverfahren 2,0 betragen würde",
+    "description": ". 0,5 bis 2,0 – mindestens 120,00 €",
+    "category": "Beratung/Vertretung",
+    "multiplier": "2,0",
+    "min_fee": "120,00",
+    "flat_fee": null
+  },
+  "24101": {
+    "kv_number": "24101",
+    "title": "Fertigung eines Entwurfs, wenn die Gebühr für das Beurkundungsverfahren 1,0 betragen würde",
+    "description": ". 0,3 bis 1,0 – mindestens 60,00 €",
+    "category": "Beratung/Vertretung",
+    "multiplier": "1,0",
+    "min_fee": "60,00",
+    "flat_fee": null
+  },
+  "24102": {
+    "kv_number": "24102",
+    "title": "Fertigung eines Entwurfs, wenn die Gebühr für das Beurkundungsverfahren 0,5 betragen würde",
+    "description": ". 0,3 bis 0,5 – mindestens 30,00 €",
+    "category": "Beratung/Vertretung",
+    "multiplier": "0,5",
+    "min_fee": "30,00",
+    "flat_fee": null
+  },
+  "24103": {
+    "kv_number": "24103",
+    "title": "Auf der Grundlage eines von demselben Notar gefertigten Serienentwurfs finden Beurkundungsverfahren statt: Die Gebühren dieses Abschnitts ermäßigen sich jeweils um",
+    "description": ". die Gebühr für das Beurkundungs- verfahren",
+    "category": "Beratung/Vertretung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "24200": {
+    "kv_number": "24200",
+    "title": "Beratungsgebühr",
+    "description": ". (1) Die Gebühr entsteht für eine Beratung, soweit der Beratungsgegenstand nicht Gegenstand eines anderen gebührenpflichtigen Verfahrens oder Geschäfts ist. (2) Soweit derselbe Gegenstand demnächst Gegenstand eines anderen gebührenpflichtigen Verfahrens oder Geschäfts ist, ist die Beratungsgebühr auf die Gebühr für das andere Verfahren oder Geschäft anzurechnen.0,3 bis 1,0",
+    "category": "Beratung/Vertretung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "24201": {
+    "kv_number": "24201",
+    "title": "Der Beratungsgegenstand könnte auch Beurkundungsgegenstand sein und die Beurkundungsgebühr würde 1,0 betragen: Die Gebühr 24200 beträgt",
+    "description": ". 0,3 bis 0,5",
+    "category": "Beratung/Vertretung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "24202": {
+    "kv_number": "24202",
+    "title": "Der Beratungsgegenstand könnte auch Beurkundungsgegenstand sein und die Beurkundungsgebühr würde weniger als 1,0 betragen: Die Gebühr 24200 beträgt",
+    "description": ". 0,3",
+    "category": "Beratung/Vertretung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "24203": {
+    "kv_number": "24203",
+    "title": "Beratung bei der Vorbereitung oder Durchführung einer Hauptversammlung oder Gesellschafterversammlung",
+    "description": ". Die Gebühr entsteht, soweit der Notar die Gesellschaft über die im Rahmen eines Beurkundungsverfahrens bestehenden Amtspflichten hinaus berät. 0,5 bis 2,0",
+    "category": "Beratung/Vertretung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "25100": {
+    "kv_number": "25100",
+    "title": "Beglaubigung einer Unterschrift, eines Handzeichens oder einer qualifizierten elektronischen Signatur",
+    "description": ". (1) Die Gebühr entsteht nicht in den in",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": "0,2",
+    "min_fee": "20,00",
+    "flat_fee": null
+  },
+  "25101": {
+    "kv_number": "25101",
+    "title": "Die Beglaubigung erfolgt für",
+    "description": ". 1. eine Erklärung, für die nach den Staatsschuldbuchgesetzen eine öffentliche Beglaubigung vorgeschrieben ist, 2. eine Zustimmung gemäß § 27 der Grundbuchordnung sowie einen damit verbundenen Löschungsantrag gemäß § 13 der Grundbuchordnung, 3. den Nachweis der Verwaltereigenschaft gemäß § 26 Abs. 4 WEG: Die Gebühr 25100 beträgt .......... 20,00 €",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "20,00"
+  },
+  "25102": {
+    "kv_number": "25102",
+    "title": "Beglaubigung von Dokumenten",
+    "description": ". (1) Neben der Gebühr wird keine Dokumentenpauschale erhoben. (2) Die Gebühr wird nicht erhoben für die Erteilung 1. beglaubigter Kopien oder Ausdrucke der vom Notar aufgenommenen oder entworfenen oder in Urschrift in seiner dauernden Verwahrung befindlichen Urkunden und 2. beglaubigter Kopien vorgelegter Vollmachten und Ausweise über die Berechtigung eines gesetzlichen Vertreters, die der vom Notar gefertigten Niederschrift beizulegen sind (§ 12 BeurkG). (3) Einer Kopie im Sinne des Absatzes 2 steht ein in ein elektronisches Dokument übertragenes Schriftstück gleich, insbesondere wenn dieses einer vom Notar gefertigten elektronischen Niederschrift beigefügt ist (§ 12 Abs. 1 Satz 2 BeurkG).1,00 € für jede angefangene Seite – mindestens 10,00 €",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "1,00"
+  },
+  "25103": {
+    "kv_number": "25103",
+    "title": "Sicherstellung der Zeit, zu der eine Privaturkunde ausgestellt ist, einschließlich der über die Vorlegung ausgestellten Bescheinigung",
+    "description": ". 20,00 €",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "20,00"
+  },
+  "25104": {
+    "kv_number": "25104",
+    "title": "Erteilung von Bescheinigungen über Tatsachen oder Verhältnisse, die urkundlich nachgewiesen oder offenkundig sind, einschließlich der Identitätsfeststellung, wenn sie über die §§ 10 und 40 Abs. 4 BeurkG hinaus selbständige Bedeutung hat",
+    "description": ". Die Gebühr entsteht nicht, wenn die Erteilung der Bescheinigung eine Betreuungstätigkeit nach Nummer 22200 darstellt.1,0",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "25200": {
+    "kv_number": "25200",
+    "title": "Erteilung einer Bescheinigung nach § 21 Abs. 1 BNotO",
+    "description": ". 15,00 € für jedes Registerblatt, dessen Einsicht zur Erteilung erforderlich ist",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "15,00"
+  },
+  "25201": {
+    "kv_number": "25201",
+    "title": "Rangbescheinigung (§ 122 GNotKG)",
+    "description": ". 0,3",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "25202": {
+    "kv_number": "25202",
+    "title": "Herstellung eines Teilhypotheken-, -grundschuld- oder -rentenschuldbriefs",
+    "description": ". 0,3",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "25203": {
+    "kv_number": "25203",
+    "title": "Erteilung einer Bescheinigung über das im Inland oder im Ausland geltende Recht einschließlich von Tatsachen",
+    "description": ". 0,3 bis 1,0",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "25204": {
+    "kv_number": "25204",
+    "title": "Abgabe einer Erklärung aufgrund einer Vollmacht anstelle einer in öffentlich beglaubigter Form durch die Beteiligten abzugebenden Erklärung",
+    "description": ". Die Gebühr entsteht nicht, wenn für die Tätigkeit eine Betreuungsgebühr anfällt. in Höhe der für die Fertigung des Entwurfs der Erklärung zu erhebenden Gebühr",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "25205": {
+    "kv_number": "25205",
+    "title": "Tätigkeit als zu einer Beurkundung zugezogener zweiter Notar",
+    "description": ". (1) Daneben wird die Gebühr 26002 oder 26003 nicht erhoben. (2) Der zuziehende Notar teilt dem zugezogenen Notar die Höhe der von ihm zu erhebenden Gebühr für das Beurkundungsverfahren mit.in Höhe von 50 % der dem beurkundenden Notar zustehenden Gebühr für das Beurkundungsverfahren",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "25206": {
+    "kv_number": "25206",
+    "title": "Gründungsprüfung gemäß § 33 Abs. 3 des Aktiengesetzes",
+    "description": ". 1,0 – mindestens 1 000,00 €",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "000,00"
+  },
+  "25207": {
+    "kv_number": "25207",
+    "title": "Erwirkung der Apostille oder der Legalisation einschließlich der Beglaubigung durch den Präsidenten des Landgerichts",
+    "description": ". 25,00 €",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "25,00"
+  },
+  "25208": {
+    "kv_number": "25208",
+    "title": "Erwirkung der Legalisation, wenn weitere Beglaubigungen notwendig sind: Die Gebühr 25207 beträgt",
+    "description": ". 50,00 €",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "50,00"
+  },
+  "25209": {
+    "kv_number": "25209",
+    "title": "Einsicht in das Grundbuch, in öffentliche Register und Akten einschließlich der Mitteilung des Inhalts an den Beteiligten",
+    "description": ". Die Gebühr entsteht nur, wenn die Tätigkeit nicht mit einem gebührenpflichtigen Verfahren oder Geschäft zusammenhängt. 15,00 €Erteilung von Abdrucken aus einem Register oder aus dem Grundbuch auf Antrag oder deren beantragte Ergänzung oder Bestätigung:25210– Abdruck .......... 10,00 €25211– beglaubigter Abdruck .......... Neben den Gebühren 25210 und 25211 wird keine Dokumentenpauschale erhoben.15,00 €Anstelle eines Abdrucks wird in den Fällen der Nummern 25210 und 25211 die elektronische Übermittlung einer Datei beantragt:25212– unbeglaubigte Datei .......... 5,00 €25213– beglaubigte Datei .......... 10,00 €Werden zwei elektronische Dateien gleichen Inhalts in unterschiedlichen Dateiformaten gleichzeitig übermittelt, wird die Gebühr 25212 oder 25213 nur einmal erhoben. Sind beide Gebührentatbestände erfüllt, wird die höhere Gebühr erhoben.",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "15,00"
+  },
+  "25214": {
+    "kv_number": "25214",
+    "title": "Erteilung einer Bescheinigung nach § 21 Abs. 3 BNotO",
+    "description": ". 15,00 €",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "15,00"
+  },
+  "25300": {
+    "kv_number": "25300",
+    "title": "Verwahrung von Geldbeträgen: je Auszahlung",
+    "description": ". Der Notar kann die Gebühr bei der Ablieferung an den Auftraggeber entnehmen. 1,0 – soweit der Betrag 13 Mio. € übersteigt: 0,1 % des Auszahlungsbetrags",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "25301": {
+    "kv_number": "25301",
+    "title": "Entgegennahme von Wertpapieren und Kostbarkeiten zur Verwahrung",
+    "description": ". Durch die Gebühr wird die Verwahrung mit abgegolten.1,0 – soweit der Wert 13 Mio. € übersteigt: 0,1 % des Werts",
+    "category": "Beglaubigung/Bescheinigung",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": null
+  },
+  "26000": {
+    "kv_number": "26000",
+    "title": "Tätigkeiten, die auf Verlangen der Beteiligten an Sonntagen und allgemeinen Feiertagen, an Sonnabenden vor 8 und nach 13 Uhr sowie an den übrigen Werktagen außerhalb der Zeit von 8 bis 18 Uhr vorgenommen werden",
+    "description": ". (1) Treffen mehrere der genannten Voraussetzungen zu, so wird die Gebühr nur einmal erhoben. (2) Die Gebühr fällt nur an, wenn bei den einzelnen Geschäften nichts anderes bestimmt ist.in Höhe von 30 % der für das Verfahren oder das Geschäft zu erhebenden Gebühr – höchstens 30,00 €",
+    "category": "Sonstiges",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "30,00"
+  },
+  "26001": {
+    "kv_number": "26001",
+    "title": "Abgabe der zu beurkundenden Erklärung eines Beteiligten in einer fremden Sprache ohne Hinzuziehung eines Dolmetschers sowie Beurkundung, Beglaubigung oder Bescheinigung in einer fremden Sprache oder Übersetzung einer Erklärung in eine andere Sprache",
+    "description": ". Mit der Gebühr ist auch die Erteilung einer Bescheinigung gemäß § 50 BeurkG abgegolten.in Höhe von 30 % der für das Beurkundungsverfahren, für eine Beglaubigung oder Bescheinigung zu erhebenden Gebühr – höchstens 5 000,00 €",
+    "category": "Sonstiges",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "000,00"
+  },
+  "26002": {
+    "kv_number": "26002",
+    "title": "Die Tätigkeit wird auf Verlangen eines Beteiligten außerhalb der Geschäftsstelle des Notars vorgenommen: Zusatzgebühr für jede angefangene halbe Stunde der Abwesenheit, wenn nicht die Gebühr 26003 entsteht",
+    "description": ". (1) Nimmt der Notar mehrere Geschäfte vor, so entsteht die Gebühr nur einmal. Sie ist auf die einzelnen Geschäfte unter Berücksichtigung der für jedes Geschäft aufgewandten Zeit angemessen zu verteilen. (2) Die Zusatzgebühr wird auch dann erhoben, wenn ein Geschäft aus einem in der Person eines Beteiligten liegenden Grund nicht vorgenommen wird. (3) Neben dieser Gebühr wird kein Tages- und Abwesenheitsgeld (Nummer 32008) erhoben.50,00 €",
+    "category": "Sonstiges",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "50,00"
+  },
+  "26003": {
+    "kv_number": "26003",
+    "title": "Die Tätigkeit wird auf Verlangen eines Beteiligten außerhalb der Geschäftsstelle des Notars vorgenommen und betrifft ausschließlich 1. die Errichtung, Aufhebung oder Änderung einer Verfügung von Todes wegen, 2. die Errichtung, den Widerruf oder die Änderung einer Vollmacht, die zur Registrierung im Zentralen Vorsorgeregister geeignet ist, 3. die Abgabe einer Erklärung gemäß § 1816 Abs. 2 BGB betreffend die Person eines Betreuers oder 4. eine Willensäußerung eines Beteiligten hinsichtlich seiner medizinischen Behandlung oder deren Abbruch: Zusatzgebühr",
+    "description": ". Die Gebühr entsteht für jeden Auftraggeber nur einmal. Im Übrigen gelten die Absätze 2 und 3 der Anmerkung zu Nummer 26002 entsprechend.50,00 €Teil 3AuslagenNr.AuslagentatbestandHöhe",
+    "category": "Sonstiges",
+    "multiplier": null,
+    "min_fee": null,
+    "flat_fee": "50,00"
+  }
+}
