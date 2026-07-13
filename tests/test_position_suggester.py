@@ -11,7 +11,6 @@ def _make_position(
         kv_number=kv_number,
         description=description,
         business_value_eur=business_value,
-        legal_basis="GNotKG",
         source_reference="Test",
         confidence=1.0,
         reasoning="",
@@ -60,7 +59,7 @@ def test_suggest_missing_positions_already_complete() -> None:
 
 
 def test_suggest_missing_positions_catalog_description() -> None:
-    positions = []
+    positions: list[ExtractedPosition] = []
 
     suggestions = suggest_missing_positions(positions, "Testament")
 
@@ -103,7 +102,7 @@ def test_suggest_missing_positions_with_zero_value() -> None:
 
 
 def test_suggest_missing_positions_multiple_keywords() -> None:
-    positions = []
+    positions: list[ExtractedPosition] = []
 
     suggestions = suggest_missing_positions(positions, "Schenkungsvertrag")
 
@@ -114,12 +113,11 @@ def test_suggest_missing_positions_multiple_keywords() -> None:
 
 
 def test_suggest_missing_positions_ignores_empty_kv_number() -> None:
-    positions = [
+    positions: list[ExtractedPosition] = [
         ExtractedPosition(
             kv_number="",
             description="Allgemein",
             business_value_eur=100_000.0,
-            legal_basis="GNotKG",
             source_reference="Test",
             confidence=1.0,
             reasoning="",
