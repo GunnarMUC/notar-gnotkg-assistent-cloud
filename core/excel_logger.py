@@ -40,10 +40,12 @@ def create_audit_log(invoice: GeneratedInvoice) -> bytes:
     # Summen
     ws["A8"] = "Summen"
     ws["A8"].font = Font(bold=True)
-    ws["A9"] = f"Nettobetrag: {invoice.total_net:,.2f} €"
-    ws["A10"] = f"Umsatzsteuer ({invoice.vat_rate * 100:.0f} %): {invoice.vat_amount:,.2f} €"
-    ws["A11"] = f"Gesamtbetrag: {invoice.total_gross:,.2f} €"
-    ws["A11"].font = Font(bold=True, color="1F4E79")
+    ws["A9"] = f"Honorar netto: {sum(p.fee_amount for p in invoice.positions):,.2f} €"
+    ws["A10"] = f"Auslagen: {sum(invoice.auslagen.values()):,.2f} €"
+    ws["A11"] = f"Nettobetrag: {invoice.total_net:,.2f} €"
+    ws["A12"] = f"Umsatzsteuer ({invoice.vat_rate * 100:.0f} %): {invoice.vat_amount:,.2f} €"
+    ws["A13"] = f"Gesamtbetrag: {invoice.total_gross:,.2f} €"
+    ws["A13"].font = Font(bold=True, color="1F4E79")
 
     ws.column_dimensions["A"].width = 50
 

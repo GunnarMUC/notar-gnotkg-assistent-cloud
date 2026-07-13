@@ -40,15 +40,26 @@ def render_invoice_tab() -> None:
 
 
 def _render_summary() -> None:
-    total_net = sum(p.get("fee_amount", 0) for p in st.session_state.final_positions)
+    fee_net = sum(p.get("fee_amount", 0) for p in st.session_state.final_positions)
+    auslagen = st.session_state.get("auslagen", {})
+    total_auslagen = sum(auslagen.values())
+    total_net = fee_net + total_auslagen
     vat = total_net * settings.app_vat_rate
     total_gross = total_net + vat
 
     st.write("### Zusammenfassung")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Netto", f"{total_net:,.2f} €")
-    col2.metric("USt (19 %)", f"{vat:,.2f} €")
-    col3.metric("**Brutto**", f"**{total_gross:,.2f} €**")
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Honorar netto", f"{fee_net:,.2f} €")
+    col2.metric("Auslagen", f"{total_auslagen:,.2f} €")
+    col3.metric("USt (19 %)", f"{vat:,.2f} €")
+    col4.metric("**Brutto**", f"**{total_gross:,.2f} €**")
+
+    if total_auslagen > 0:
+        st.caption(
+            f"Inklusive Auslagen: Dokumentenpauschale {auslagen.get('dokumentenpauschale', 0):,.2f} €, "
+            f"Post/Telekom {auslagen.get('post_telekom', 0):,.2f} €, "
+            f"Sonstige {auslagen.get('sonstige', 0):,.2f} €"
+        )
 
 
 def _render_positions_table() -> None:
@@ -70,11 +81,14 @@ def _generate_invoice(output_format: str) -> None:
                     "original_filename", ""
                 )
 
+            auslagen = st.session_state.get("auslagen", {})
+
             content, invoice = generate_invoice(
                 final_positions=st.session_state.final_positions,
                 notary=profile,
                 original_document=original_document,
                 output_format=output_format,
+                auslagen=auslagen,
             )
             audit_bytes = create_audit_log(invoice)
 

@@ -13,13 +13,17 @@ def generate_invoice(
     original_document: str = "",
     output_format: str = "docx",
     fee_engine_version: str = "GNotKG_Stand_2026-01-01_v1",
+    auslagen: dict[str, float] | None = None,
 ) -> tuple[bytes, GeneratedInvoice]:
     """Erzeugt eine Honorarrechnung im gewählten Format. Gibt (bytes, GeneratedInvoice) zurück."""
     settings = get_settings()
     now = datetime.now()
+    auslagen = auslagen or {}
 
     vat_rate = settings.app_vat_rate
-    total_net = sum(p.get("fee_amount", 0.0) for p in final_positions)
+    fee_net = sum(p.get("fee_amount", 0.0) for p in final_positions)
+    total_auslagen = sum(auslagen.values())
+    total_net = fee_net + total_auslagen
     vat_amount = round(total_net * vat_rate, 2)
     total_gross = total_net + vat_amount
 
@@ -33,6 +37,7 @@ def generate_invoice(
             total_gross,
             original_document,
             fee_engine_version,
+            auslagen,
         )
     elif output_format == "rtf":
         content = _generate_rtf(
@@ -44,6 +49,7 @@ def generate_invoice(
             total_gross,
             original_document,
             fee_engine_version,
+            auslagen,
         )
     else:
         content = _generate_txt(
@@ -55,6 +61,7 @@ def generate_invoice(
             total_gross,
             original_document,
             fee_engine_version,
+            auslagen,
         )
 
     positions = []
@@ -90,6 +97,7 @@ def generate_invoice(
         notary=profile,
         original_document=original_document,
         positions=positions,
+        auslagen=auslagen,
         total_net=total_net,
         vat_amount=vat_amount,
         total_gross=total_gross,
@@ -97,6 +105,23 @@ def generate_invoice(
         fee_engine_version=fee_engine_version,
     )
     return content, invoice
+
+
+_AUSLAGEN_LABELS = {
+    "dokumentenpauschale": "Dokumentenpauschale",
+    "post_telekom": "Post-/Telekompauschale",
+    "sonstige": "Sonstige Auslagen",
+}
+
+
+def _format_auslagen(auslagen: dict[str, float]) -> list[tuple[str, float]]:
+    """Gibt beschriftete Auslagenzeilen zurück."""
+    items: list[tuple[str, float]] = []
+    for key, label in _AUSLAGEN_LABELS.items():
+        value = auslagen.get(key, 0.0)
+        if value:
+            items.append((label, value))
+    return items
 
 
 def _generate_docx(
@@ -108,6 +133,7 @@ def _generate_docx(
     total_gross: float,
     original_document: str,
     fee_version: str,
+    auslagen: dict[str, float],
 ) -> bytes:
     from docx import Document
     from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -171,6 +197,15 @@ def _generate_docx(
 
     doc.add_paragraph()
 
+    # Auslagen
+    auslagen_items = _format_auslagen(auslagen)
+    if auslagen_items:
+        auslagen_heading = doc.add_paragraph()
+        auslagen_heading.add_run("Auslagen:").bold = True
+        for label, value in auslagen_items:
+            doc.add_paragraph(f"{label}: {value:,.2f} €")
+        doc.add_paragraph()
+
     # Summen
     summary = doc.add_paragraph()
     summary.add_run(f"Zwischensumme: {total_net:,.2f} €\n").bold = False
@@ -222,6 +257,7 @@ def _generate_txt(
     total_gross: float,
     original_document: str,
     fee_version: str,
+    auslagen: dict[str, float],
 ) -> bytes:
     lines = []
     lines.append(notary.get("firm_name", ""))
@@ -245,6 +281,15 @@ def _generate_txt(
         fee_str = f"{p.get('fee_amount', 0.0):,.2f}"
         lines.append(f"{kv:10s} {desc:30s} {bw_str:>12s} {fee_str:>10s} €")
     lines.append("-" * 62)
+
+    auslagen_items = _format_auslagen(auslagen)
+    if auslagen_items:
+        lines.append("")
+        lines.append("Auslagen:")
+        for label, value in auslagen_items:
+            lines.append(f"{'':10s} {label:30s} {value:>22,.2f} €")
+        lines.append("")
+
     lines.append(f"{'':10s} {'':30s} {'Zwischensumme':>12s} {total_net:>10,.2f} €")
     lines.append(f"{'':10s} {'':30s} {'USt 19%':>12s} {vat:>10,.2f} €")
     lines.append(f"{'':10s} {'':30s} {'Gesamtbetrag':>12s} {total_gross:>10,.2f} €")
@@ -271,6 +316,7 @@ def _generate_rtf(
     total_gross: float,
     original_document: str,
     fee_version: str,
+    auslagen: dict[str, float],
 ) -> bytes:
     # RTF als einfaches Text-RTF
     text = _generate_txt(
@@ -282,6 +328,7 @@ def _generate_rtf(
         total_gross,
         original_document,
         fee_version,
+        auslagen,
     ).decode("utf-8")
 
     rtf = "{\\rtf1\\ansi\\deff0\n"

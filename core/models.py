@@ -77,6 +77,7 @@ class GeneratedInvoice(BaseModel):
     notary: NotaryProfile
     original_document: str = ""
     positions: list[FinalInvoicePosition] = Field(default_factory=list)
+    auslagen: dict[str, float] = Field(default_factory=dict)
     total_net: float = 0.0
     vat_rate: float = Field(default=0.19)
     vat_amount: float = 0.0
